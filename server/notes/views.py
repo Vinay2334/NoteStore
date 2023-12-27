@@ -1,13 +1,14 @@
-from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter, OpenApiTypes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
-from user.models import Note
+from user.models import Note, UserProfile
 from notes import serializers
 from notes.permissions import IsOwnerOrReadOnly
+
 
 @extend_schema_view(
     list=extend_schema(
@@ -30,16 +31,29 @@ from notes.permissions import IsOwnerOrReadOnly
         ]
     )
 )
+
 class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NoteSerializer
     queryset = Note.objects.all()
     authentication_classes = [TokenAuthentication,]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
+    def list(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
+        data = serializer.data
+        user = request.user
+        try:
+            liked_notes = user.liked_notes.values_list('id', flat=True)
+            for note in data:
+                note['is_liked'] = note['id'] in liked_notes
+        except:
+            pass
+        return Response(data)
+
     def _params_to_list(self, qs):
         """Convert list of strings to Integer"""
         return qs.split(',')
-    
+
     def get_queryset(self):
         # print(self.request.query_params.get('subject'))
         title = self.request.query_params.get('title')
@@ -54,9 +68,29 @@ class NoteViewSet(viewsets.ModelViewSet):
         if category:
             category_names = self._params_to_list(category)
             queryset = queryset.filter(category=category_names)
-        
+
         return queryset.distinct()
 
     def perform_create(self, serializer):
-        if self.request.user:
-            serializer.save(user=self.request.user)
+        owner = self.request.user
+        if owner:
+            serializer.save(user=owner, contributor=owner.name)
+
+
+class ToggleLikes(APIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAuthenticated,]
+
+    def get(self, request, *args, **kwargs):
+        note_id = self.kwargs.get('note_id')
+        user = request.user
+        if Note.objects.filter(id=note_id).exists():
+            note = Note.objects.get(id=note_id)
+            if user.liked_notes.filter(id=note_id).exists():
+                user.liked_notes.remove(note)
+                return Response({'message': f'Like removed for Note {note_id}.'})
+            else:
+                user.liked_notes.add(note)
+                return Response({'message': f'Like added for Note {note_id}.'})
+        else:
+            return Response({'message': f'No Note with id {note_id}.'})

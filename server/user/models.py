@@ -3,11 +3,44 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.utils import timezone
 from django.conf import settings
 from django.core.validators import FileExtensionValidator, EmailValidator
-from .helpers import ImageHashPath, ALLOWED_IMAGE_EXTENSIONS
+from .helpers import ImageHashPath, PDFHashPath, ALLOWED_IMAGE_EXTENSIONS
 from enum import Enum
 
 """All models here"""
 
+
+class NoteCategory(Enum):
+    NOTES = 'notes'
+    EXAM_PAPERS = 'exam_papers'
+
+
+class SubjectCategory(Enum):
+    APPLIED_MATHEMATICS = 'Applied Mathematics'
+    APPLIED_PHYSICS = 'Applied Physics'
+    APPLIED_BIOLOGY = 'Applied Biology'
+
+
+class Note(models.Model):
+    """Note Model"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    title = models.CharField(max_length=255)
+    contributor = models.CharField(max_length=255, blank=True)
+    url = models.FileField(upload_to=PDFHashPath, max_length=200, validators=[
+                           FileExtensionValidator(allowed_extensions=['pdf'])])
+    subject = models.CharField(max_length=200, choices=[(
+        tag.name, tag.value) for tag in SubjectCategory])
+    category = category = models.CharField(
+        max_length=20,
+        choices=[(tag.name, tag.value) for tag in NoteCategory]
+    )
+    date_created = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.title
+    
 
 class UserProfileManager(BaseUserManager):
     """To manage the operations related to user"""
@@ -52,43 +85,9 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     total_uploads = models.IntegerField(default=0)
     total_downloads = models.IntegerField(default=0)
+    liked_notes = models.ManyToManyField(Note, related_name='likes')
 
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
-
-
-class NoteCategory(Enum):
-    NOTES = 'notes'
-    EXAM_PAPERS = 'exam_papers'
-
-class SubjectCategory(Enum):
-    APPLIED_MATHEMATICS = 'Applied Mathematics'
-    APPLIED_PHYSICS = 'Applied Physics'
-    APPLIED_BIOLOGY = 'Applied Biology'
-
-
-class Note(models.Model):
-    """Note Model"""
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete = models.CASCADE,
-    )
-    title = models.CharField(max_length=255)
-    contributor = models.CharField(max_length=255, blank=True)
-    url = models.URLField(max_length=200, null=True, blank=True)
-    subject = models.CharField(max_length=200, choices=[(tag.name, tag.value) for tag in SubjectCategory])
-    category = category = models.CharField(
-        max_length=20,
-        choices=[(tag.name, tag.value) for tag in NoteCategory]
-    )
-    date_created = models.DateTimeField(default=timezone.now)
-
-    def save(self, *args, **kwargs):
-        # Set the contributor to the current authenticated user
-        self.contributor = self.user.name if self.user else "Anonymous"
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.title

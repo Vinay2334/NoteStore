@@ -9,4 +9,5 @@ app_name = 'note'
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('like/<str:note_id>', views.ToggleLikes.as_view()),
 ]
