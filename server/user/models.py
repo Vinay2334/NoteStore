@@ -37,6 +37,7 @@ class Note(models.Model):
         choices=[(tag.name, tag.value) for tag in NoteCategory]
     )
     date_created = models.DateTimeField(default=timezone.now)
+    likes_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title

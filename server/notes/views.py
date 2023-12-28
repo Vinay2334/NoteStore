@@ -1,11 +1,10 @@
-from rest_framework import viewsets, status
-from rest_framework.views import APIView
+from rest_framework import viewsets, status, generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter, OpenApiTypes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django.db import transaction
 
-import json
 from user.models import Note, UserProfile
 from notes import serializers
 from notes.permissions import IsOwnerOrReadOnly
@@ -30,12 +29,12 @@ from notes.permissions import IsOwnerOrReadOnly
                 description='Comma seperated list of category'
             ),
         ]
-    )
+    ),
 )
 class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NoteSerializer
     queryset = Note.objects.all()
-    authentication_classes = [TokenAuthentication,]
+    authentication_classes = [TokenAuthentication,] 
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def list(self, request, *args, **kwargs):
@@ -56,7 +55,6 @@ class NoteViewSet(viewsets.ModelViewSet):
         return qs.split(',')
 
     def get_queryset(self):
-        # print(self.request.query_params.get('subject'))
         title = self.request.query_params.get('title')
         subject = self.request.query_params.get('subject')
         category = self.request.query_params.get('category')
@@ -77,13 +75,13 @@ class NoteViewSet(viewsets.ModelViewSet):
         if owner:
             serializer.save(user=owner, contributor=owner.name)
 
-
-class ToggleLikes(APIView):
-    """Like functionality"""
+class ToggleLikes(generics.ListAPIView):
+    """Like functionality."""
     authentication_classes = [TokenAuthentication,]
     permission_classes = [IsAuthenticated,]
 
-    def get(self, request, *args, **kwargs):
+    @transaction.atomic()
+    def list(self, request, *args, **kwargs):
         note_id = self.kwargs.get('note_id')
         user = request.user
         try:
@@ -91,9 +89,13 @@ class ToggleLikes(APIView):
                 note = Note.objects.get(id=note_id)
                 if user.liked_notes.filter(id=note_id).exists():
                     user.liked_notes.remove(note)
+                    note.likes_count -= 1
+                    note.save()
                     return Response({'message': f'Like removed for Note {note_id}.'})
                 else:
                     user.liked_notes.add(note)
+                    note.likes_count += 1
+                    note.save()
                     return Response({'message': f'Like added for Note {note_id}.'})
             else:
                 return Response({'message': f'No Note with id {note_id}.'}, status=status.HTTP_404_NOT_FOUND)
@@ -101,16 +103,20 @@ class ToggleLikes(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class UserLikeView(APIView):
+class UserLikeView(generics.ListAPIView):
     """User likes"""
     authentication_classes = [TokenAuthentication,]
     permission_classes = [IsAuthenticated,]
+    serializer_class = serializers.NoteSerializer
 
-    def get(self, request, *args, **kwargs):
+    def get_queryset(self):
+        user = self.request.user
+        return user.liked_notes.all()
+
+    def list(self, request, *args, **kwargs):
         try:
-            user = request.user
-            user_liked_notes = user.liked_notes.all()
-            serializer = serializers.NoteSerializer(user_liked_notes, many=True)
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
