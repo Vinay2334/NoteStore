@@ -18,6 +18,8 @@ services:
   server:
     build:
       context: ./server
+      args: 
+        - DEV=true
     networks:
       - database
     depends_on:
