@@ -1,0 +1,36 @@
+services:
+  mysql:
+    image: mysql
+    ports:
+      - "3306:3306"
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: notes
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - database
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+  server:
+    build:
+      context: ./server
+    networks:
+      - database
+    depends_on:
+      mysql:
+        condition: service_healthy 
+    ports:
+     - "8000:8000"
+    volumes:
+      - ./server:/server
+    entrypoint: /entrypoint.sh
+
+networks:
+  database:
+    driver: bridge
+volumes:
+    mysql-data:

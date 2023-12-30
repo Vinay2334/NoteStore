@@ -1,0 +1,10 @@
+.gitignore
+
+.Dockerfile 
+
+__pycache__/
+*/__pycache__/
+
+env
+pdf
+profile_pics
