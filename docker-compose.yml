@@ -12,7 +12,7 @@ services:
     networks:
       - database
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "mysql"]
       timeout: 20s
       retries: 10
   server:
@@ -30,6 +30,12 @@ services:
     volumes:
       - ./server:/server
     entrypoint: /entrypoint.sh
+    environment:
+      DB_HOST: mysql
+      DB_NAME: notes
+      DB_USER: root
+      DB_PASS: admin
+      DB_PORT: 3306
 
 networks:
   database:
