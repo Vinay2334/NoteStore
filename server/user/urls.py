@@ -1,11 +1,10 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from user import views
 
-router = DefaultRouter()
-router.register('profile', views.UserProfileViewSet)
+app_name = 'user'
+
 
 urlpatterns = [
-    path('login/', views.UserLoginApiView.as_view()),
-    path('', include(router.urls)),
+    path('login/', views.UserLoginApiView.as_view(), name='token'),
+    path('create/', views.UserCreateView.as_view(), name='create'),
 ]
