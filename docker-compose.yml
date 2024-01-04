@@ -29,13 +29,15 @@ services:
      - "8000:8000"
     volumes:
       - ./server:/server
-    entrypoint: /entrypoint.sh
+    command:
+      sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     environment:
       DB_HOST: mysql
       DB_NAME: notes
       DB_USER: root
       DB_PASS: admin
       DB_PORT: 3306
+    restart: always
 
 networks:
   database:
