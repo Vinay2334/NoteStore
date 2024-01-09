@@ -2,6 +2,7 @@
 from django.core.management.base import BaseCommand
 import time
 from django.db.utils import OperationalError
+from MySQLdb import OperationalError as SqlError
 
 class Command(BaseCommand):
     """Django command to wait for database"""
@@ -14,8 +15,7 @@ class Command(BaseCommand):
             try:
                 self.check(databases=['default'])
                 db_up = True
-            except(OperationalError):
+            except(OperationalError, SqlError):
                 self.stdout.write('Databse unavailable, waiting 1 second...')
                 time.sleep()
-        
         self.stdout.write(self.style.SUCCESS('Database available!'))

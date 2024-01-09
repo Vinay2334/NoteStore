@@ -9,7 +9,9 @@ WORKDIR /server
 EXPOSE 8000
 ARG DEV=false
 
-RUN python -m venv /py && \
+RUN apt-get update && \
+    apt-get -y install sudo && \
+    python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     rm -rf /tmp/* && \
@@ -25,4 +27,4 @@ RUN chown django-user:django-user entrypoint.sh && \
 
 ENV PATH="/py/bin:$PATH"
 
-USER django-user
+USER root
