@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from user import models
 
 class ModeltTests(TestCase):
     """Test models."""
@@ -17,3 +18,18 @@ class ModeltTests(TestCase):
 
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
+    
+    def test_create_note(self):
+        """Test creating a note is successfull"""
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'test',
+            'testpass123',
+        )
+        note = models.Note.objects.create(
+            user=user,
+            title='Sample note',
+            subject='Applied Mathematics',
+            category='notes',
+        )
+        self.assertEqual(str(note), note.title)

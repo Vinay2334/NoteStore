@@ -7,7 +7,7 @@ from django.db import transaction
 
 from user.models import Note, UserProfile
 from notes import serializers
-from notes.permissions import IsOwnerOrReadOnly
+from notes.permissions import IsOwnerOrReadOnly, IsOwner
 
 
 @extend_schema_view(
@@ -31,25 +31,23 @@ from notes.permissions import IsOwnerOrReadOnly
         ]
     ),
 )
-class NoteViewSet(viewsets.ModelViewSet):
+class ListAllNotes(generics.ListAPIView):
     serializer_class = serializers.NoteSerializer
+    authentication_classes = [TokenAuthentication]
     queryset = Note.objects.all()
-    authentication_classes = [TokenAuthentication,] 
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def list(self, request, *args, **kwargs):
-        serializer = self.get_serializer(
-            self.queryset, many=True, context={'request': request})
+        serializer = self.get_serializer(self.get_queryset(), many=True, context={'request': request})
         data = serializer.data
         user = request.user
         try:
             liked_notes = user.liked_notes.values_list('id', flat=True)
             for note in data:
                 note['is_liked'] = note['id'] in liked_notes
-        except:
-            pass
+        except Exception as e:
+            print('ListAllNotes like: ', e)
         return Response(data)
-
+    
     def _params_to_list(self, qs):
         """Convert list of strings to Integer"""
         return qs.split(',')
@@ -69,11 +67,6 @@ class NoteViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(category=category_names)
 
         return queryset.distinct()
-
-    def perform_create(self, serializer):
-        owner = self.request.user
-        if owner:
-            serializer.save(user=owner, contributor=owner.name)
 
 class ToggleLikes(generics.ListAPIView):
     """Like functionality."""
@@ -120,3 +113,18 @@ class UserLikeView(generics.ListAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class UserLimitedNotes(viewsets.ModelViewSet):
+    """List Notes Limited to the User"""
+    serializer_class = serializers.NoteSerializer
+    queryset = Note.objects.all()
+    authentication_classes = [TokenAuthentication,] 
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user).order_by('-id')
+
+    def perform_create(self, serializer):
+        owner = self.request.user
+        if owner:
+            serializer.save(user=owner, contributor=owner.name)
