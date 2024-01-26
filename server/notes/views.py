@@ -2,7 +2,8 @@ from rest_framework import viewsets, status, generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter, OpenApiTypes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from django.db import transaction
 
 from user.models import Note, UserProfile
@@ -68,13 +69,14 @@ class ListAllNotes(generics.ListAPIView):
 
         return queryset.distinct()
 
-class ToggleLikes(generics.ListAPIView):
+class ToggleLikes(APIView):
     """Like functionality."""
+    http_method_names = ['post']
     authentication_classes = [TokenAuthentication,]
     permission_classes = [IsAuthenticated,]
 
     @transaction.atomic()
-    def list(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         note_id = self.kwargs.get('note_id')
         user = request.user
         try:
