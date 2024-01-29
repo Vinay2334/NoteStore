@@ -33,3 +33,11 @@ class ModeltTests(TestCase):
             category='notes',
         )
         self.assertEqual(str(note), note.title)
+
+    def test_create_otp(self):
+        """Testing creating otp is successful"""
+        otp = models.OTP.objects.create(
+            email='Test@email.com',
+            otp_code=1234,
+        )
+        self.assertEqual(otp.otp_code, otp.otp_code)

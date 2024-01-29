@@ -2,6 +2,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from user import models
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -22,13 +23,26 @@ class PublicUserApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
+    def test_sendotp(self):
+        """Test sending OTP"""
+        payload = {'email':'test@email.com'}
+        send = self.client.post(reverse('user:sendotp'), payload)
+        self.assertEqual(send.status_code, status.HTTP_200_OK)
+        otp = models.OTP.objects.filter(email='test@email.com').first()
+        self.assertIsNotNone(otp)
+
     def test_create_user_success(self):
         """Test creating a user is successful"""
+        email = 'test@example.com'
+        send = self.client.post(reverse('user:sendotp'), {'email':email})
+        self.assertEqual(send.status_code, status.HTTP_200_OK)
+        otp = models.OTP.objects.filter(email=email).first()
         payload = {
-            'email': 'test@example.com',
+            'email': email,
             'password': 'testpass123',
             'name': 'Test name',
             'college_name': 'Test_college',
+            'otp': otp.otp_code
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
@@ -141,12 +155,13 @@ class PrivateUserAPITests(TestCase):
     
     def test_update_user_profile(self):
         """Test updating the user profile for the authenticated user"""
-        payload = {'name': 'Updated_name', 'password': 'newpassword'}
+        payload = {'name': 'Updated_name', 'college_name': 'new_college', 'password': 'password'}
 
         res = self.client.patch(ME_URL, payload)
 
         # Refresh the user details
         self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload['name'])
+        self.assertEqual(self.user.college_name, payload['college_name'])
         self.assertTrue(self.user.check_password(payload['password']))
         self.assertEqual(res.status_code, status.HTTP_200_OK)

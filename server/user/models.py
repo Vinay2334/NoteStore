@@ -92,3 +92,27 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
+
+class OTP(models.Model):
+    email = models.EmailField(unique=True, validators=[EmailValidator])
+    otp_code = models.IntegerField(null=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField(db_index=True)
+
+    # def __str__(self):
+    #     return str(self.otp_code)
+
+    def save(self, *args, **kwargs):
+        # Setting expires_at at 10 minutes from created_at time
+        self.expires_at = self.created_at + timezone.timedelta(minutes=10)
+        super().save(*args, **kwargs)
+    
+    def is_expired(self, *args, **kwargs):
+        # Check if an OTP is already expired
+        return self.expires_at < timezone.now()
+    
+    @classmethod
+    def delete_expired(cls):
+        # Delete all expired OTPs from the database
+        expired_otps = cls.objects.filter(expires_at__lt=timezone.now())
+        expired_otps.delete()

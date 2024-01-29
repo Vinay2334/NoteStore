@@ -1,12 +1,16 @@
 from rest_framework import serializers
 from user import models
 from django.contrib.auth import get_user_model, authenticate
+from django.utils import timezone
+from .helpers import send_otp_via_email
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """For user profile object"""
+    otp = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = models.UserProfile
-        fields = ('id', 'email', 'name', 'password', 'college_name', 'profile_pic')
+        fields = ('id', 'email', 'name', 'password', 'college_name', 'profile_pic', 'otp',)
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -17,6 +21,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create and return a new user (overrides inbuilt create function)"""
+        otp = validated_data.pop('otp', None)
+        generated_otp = models.OTP.objects.filter(email=validated_data['email']).first()
+        
+        # Check for OTP validation
+        if not generated_otp or otp != generated_otp.otp_code:
+            raise serializers.ValidationError({'error': 'Invalid OTP'})
+        if generated_otp.is_expired():
+            raise serializers.ValidationError({'error': 'OTP expired. Please generate another OTP'})
+        
         user = get_user_model().objects.create_user(
             email=validated_data['email'],
             name=validated_data['name'],
@@ -59,3 +72,25 @@ class AuthTokenSerializer(serializers.Serializer):
         
         attrs['user'] = user
         return attrs
+
+class OTPSerializer(serializers.Serializer):
+    """For OTP"""
+    email = serializers.EmailField()
+
+    class Meta:
+        fields = ('id', 'email', 'otp_code', 'created_at', 'expires_at',)
+        write_only_fields = ('email',)
+
+    def create(self, validated_data):
+        """Create an OTP"""
+        otp = send_otp_via_email(validated_data['email'])
+        email = validated_data['email']
+        return models.OTP.objects.create(email=email, otp_code=otp)
+    
+    def update(self, instance, validated_data):
+        """Update the OTP if already present"""
+        otp = send_otp_via_email(validated_data['email'])
+        instance.otp_code = otp
+        instance.created_at = timezone.now()
+        instance.save()
+        return instance
