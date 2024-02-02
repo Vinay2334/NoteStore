@@ -40,3 +40,5 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.UserProfile, UserAdmin)
 admin.site.register(models.Note)
+admin.site.register(models.OTP)
+admin.site.register(models.Bookmark)

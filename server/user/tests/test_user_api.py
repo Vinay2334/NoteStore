@@ -128,6 +128,14 @@ class PublicUserApiTests(TestCase):
         res = self.client.get(ME_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    # def check_OTP_throttle(self):
+    #     """Check if the OTP endpoint is throttling"""
+    #     payload = {'email':'test@email.com'}
+    #     send = self.client.post(reverse('user:sendotp'), payload)
+    #     self.assertEqual(send.status_code, status.HTTP_200_OK)
+    #     send = self.client.post(reverse('user:sendotp'), payload)
+    #     self.assertEqual(send.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
 class PrivateUserAPITests(TestCase):
     """Test API request that require authentication"""
 

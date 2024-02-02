@@ -1,10 +1,11 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import generics, authentication, permissions, status
+from rest_framework.throttling import ScopedRateThrottle
+from rest_framework import generics, authentication, permissions, status, viewsets
 from user import serializers
-from user.models import OTP
+from user.models import OTP, UserProfile
+from .throttle import SendOTPThrottle
 
 # Create your views here.
 class UserCreateView(generics.CreateAPIView):
@@ -30,10 +31,12 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 class SendOtp(generics.CreateAPIView):
     """Send OTP when registering"""
     serializer_class = serializers.OTPSerializer
+    # throttle_classes = [SendOTPThrottle]
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
-        
+        if UserProfile.objects.filter(email=email).exists():
+            return Response({'message': 'Email already registered. Please SignIn'}, status=status.HTTP_409_CONFLICT)
         try:
             otp_instance = OTP.objects.get(email=email)
             serializer = self.get_serializer(instance=otp_instance, data=request.data)

@@ -95,8 +95,6 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
-print(DATABASES['default'])
-
 
 
 # Password validation
@@ -147,7 +145,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser'
-    ]
+    ],
+     'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+    }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

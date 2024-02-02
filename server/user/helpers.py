@@ -18,8 +18,6 @@ def PDFHashPath(instance, filename):
     hash_obj = hashlib.md5(instance.user.email.encode())
     hash_obj.update(filename.encode())
 
-    print(filename.encode())
-
     hash_hex = hash_obj.hexdigest()
 
     return f'pdfs/{format(hash_hex)}-{filename.split(".")[-2]}.pdf'

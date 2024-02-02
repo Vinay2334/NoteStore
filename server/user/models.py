@@ -87,6 +87,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     total_uploads = models.IntegerField(default=0)
     total_downloads = models.IntegerField(default=0)
     liked_notes = models.ManyToManyField(Note, related_name='likes')
+    bookmarks = models.ManyToManyField(Note, through='Bookmark', related_name='bookmarked_by')
+
 
     objects = UserProfileManager()
 
@@ -116,3 +118,9 @@ class OTP(models.Model):
         # Delete all expired OTPs from the database
         expired_otps = cls.objects.filter(expires_at__lt=timezone.now())
         expired_otps.delete()
+
+class Bookmark(models.Model):
+    """Bookmarks by the user"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(default=timezone.now)
