@@ -115,7 +115,7 @@ class UserLikeView(generics.ListAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+    
 class UserLimitedNotes(viewsets.ModelViewSet):
     """Manage notes Limited to the user"""
     serializer_class = serializers.NoteSerializer
@@ -163,4 +163,8 @@ class Bookmarks(viewsets.ViewSet):
             else:
                 return Response({'message': f'No Note with id {note_id}.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)           
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class RetrieveNote(generics.RetrieveAPIView):
+    serializer_class = serializers.NoteDetailSerializer
+    queryset = Note.objects.all()

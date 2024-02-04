@@ -10,7 +10,8 @@ app_name = 'note'
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('all', views.ListAllNotes.as_view(), name='all_notes'),
+    path('all/', views.ListAllNotes.as_view(), name='all_notes'),
+    path('retrieve/<int:pk>/', views.RetrieveNote.as_view(), name='retrieve_note'),
     path('like/<str:note_id>', views.ToggleLikes.as_view(), name='toggle_likes'),
     path('mylikes/', views.UserLikeView.as_view(), name='user_likes'),
     path('bookmarks/<str:note_id>/', views.Bookmarks.as_view({'post': 'create'}), name='create_bookmark'),

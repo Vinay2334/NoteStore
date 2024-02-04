@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # User apps
     'user',
     'notes',
+    'comments',
 
     # Installed apps
     'rest_framework',

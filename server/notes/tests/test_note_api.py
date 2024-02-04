@@ -98,7 +98,6 @@ class PrivateNoteApiTest(TestCase):
         self.client.post(reverse('note:toggle_likes', args=[user_note.id]))
         all_notes = self.client.get(ALL_NOTES)
         liked_note_data = next(n for n in all_notes.data if n['id'] == user_note.id)
-        print(liked_note_data)
 
         self.assertTrue(liked_note_data['is_liked'])
         self.assertEqual(liked_note_data['likes_count'], 1)
@@ -112,9 +111,18 @@ class PrivateNoteApiTest(TestCase):
         self.assertEqual(unliked_note_data['likes_count'], 0)
 
     def test_mylikes_functionality(self):
+        """Test Liking a note"""
         note = create_note(user=self.user)
         self.client.post(reverse('note:toggle_likes', args=[note.id]))
         user_liked_notes = self.client.get(reverse('note:user_likes'))
 
         self.assertEqual(user_liked_notes.status_code, status.HTTP_200_OK)
         self.assertEqual(user_liked_notes.data[0]['id'], note.id)
+
+    def test_retrieve_note(self):
+        """Test retreiving a single note"""
+        note = create_note(user=self.user)
+        url = reverse('note:retrieve_note', kwargs={'pk': note.id})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('comments', res.data)
