@@ -1,11 +1,9 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
-from rest_framework import generics, authentication, permissions, status, viewsets
+from rest_framework import generics, authentication, permissions, status
 from user import serializers
 from user.models import OTP, UserProfile
-from .throttle import SendOTPThrottle
 
 # Create your views here.
 class UserCreateView(generics.CreateAPIView):
@@ -27,7 +25,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Return the authenticated user"""
         return self.request.user
-    
+
 class SendOtp(generics.CreateAPIView):
     """Send OTP when registering"""
     serializer_class = serializers.OTPSerializer

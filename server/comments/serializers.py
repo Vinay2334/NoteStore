@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from user.models import Comment
+from django.core.files.storage import default_storage
 
 class CommentSerializer(serializers.ModelSerializer):
     """Serializer for the comments on the post"""
@@ -22,5 +23,6 @@ class CommentSerializer(serializers.ModelSerializer):
         user_detail = {
             'name': obj.user.name,
             'id': obj.user.id,
+            'profile_pic': default_storage.url(str(obj.user.profile_pic))
         }
         return user_detail

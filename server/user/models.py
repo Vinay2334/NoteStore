@@ -2,9 +2,15 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils import timezone
 from django.conf import settings
+from django.core.files import storage
+from django.dispatch import receiver
 from django.core.validators import FileExtensionValidator, EmailValidator
-from .helpers import ImageHashPath, PDFHashPath, ALLOWED_IMAGE_EXTENSIONS
+from PIL import Image
+from django.core.files.base import ContentFile
+from io import BytesIO
+from .helpers import ALLOWED_IMAGE_EXTENSIONS, ImageResize
 from enum import Enum
+import os
 
 """All models here"""
 
@@ -28,7 +34,7 @@ class Note(models.Model):
     )
     title = models.CharField(max_length=255)
     contributor = models.CharField(max_length=255, blank=True)
-    url = models.FileField(upload_to=PDFHashPath, max_length=200, validators=[
+    url = models.FileField(upload_to='pdf/', validators=[
                            FileExtensionValidator(allowed_extensions=['pdf'])])
     subject = models.CharField(max_length=200, choices=[(
         tag.name, tag.value) for tag in SubjectCategory])
@@ -41,27 +47,28 @@ class Note(models.Model):
 
     def __str__(self):
         return self.title
-    
+
 
 class UserProfileManager(BaseUserManager):
     """To manage the operations related to user"""
 
-    def create_user(self, email, name, password, college_name=None):
+    def create_user(self, email, name, password, college_name=None, profile_pic=None):
         if not email:
             raise ValueError('User must have an email address')
 
         # Convert second half of email address to lower case for standardization
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name, college_name=college_name)
+        user = self.model(email=email, name=name,
+                          college_name=college_name, profile_pic=profile_pic)
 
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, email, name, password):
+    def create_superuser(self, email, name, password, profile_pic=None):
         # Create new superuser
-        user = self.create_user(email, name, password)
+        user = self.create_user(email, name, password, profile_pic)
 
         user.is_superuser = True
         user.is_staff = True
@@ -79,21 +86,22 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, validators=[EmailValidator])
     name = models.CharField(max_length=255)
     college_name = models.CharField(max_length=255, null=True)
-    profile_pic = models.ImageField(upload_to=ImageHashPath, blank=True, null=True, validators=[
-                                    FileExtensionValidator(allowed_extensions=ALLOWED_IMAGE_EXTENSIONS)], default='profile_pics/default.png')
+    profile_pic = models.ImageField(upload_to='avatars/', null=True, validators=[
+                                    FileExtensionValidator(allowed_extensions=ALLOWED_IMAGE_EXTENSIONS)])
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     total_uploads = models.IntegerField(default=0)
     total_downloads = models.IntegerField(default=0)
     liked_notes = models.ManyToManyField(Note, related_name='likes')
-    bookmarks = models.ManyToManyField(Note, through='Bookmark', related_name='bookmarked_by')
-
+    bookmarks = models.ManyToManyField(
+        Note, through='Bookmark', related_name='bookmarked_by')
 
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
+
 
 class OTP(models.Model):
     email = models.EmailField(unique=True, validators=[EmailValidator])
@@ -108,31 +116,54 @@ class OTP(models.Model):
         # Setting expires_at at 10 minutes from created_at time
         self.expires_at = self.created_at + timezone.timedelta(minutes=10)
         super().save(*args, **kwargs)
-    
+
     def is_expired(self, *args, **kwargs):
         # Check if an OTP is already expired
         return self.expires_at < timezone.now()
-    
+
     @classmethod
     def delete_expired(cls):
         # Delete all expired OTPs from the database
         expired_otps = cls.objects.filter(expires_at__lt=timezone.now())
         expired_otps.delete()
 
+
 class Bookmark(models.Model):
     """Bookmarks by the user"""
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
     note = models.ForeignKey(Note, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
+
 
 class Comment(models.Model):
     """Comments for the Notes"""
     message = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
     note = models.ForeignKey(Note, on_delete=models.CASCADE)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.user.name} - {self.message}"
+
+
+@receiver(models.signals.pre_delete, sender=UserProfile)
+def delete_file_on_delete(sender, instance, using, **kwargs):
+    instance.profile_pic.delete(save=False)
+
+
+@receiver(models.signals.pre_save, sender=UserProfile)
+def delete_file_on_change(sender, instance, using, **kwargs):
+    if not instance.pk:
+        return False
+    try:
+        old_profile_pic = UserProfile.objects.filter(
+            pk=instance.pk).values_list('profile_pic', flat=True).first()
+    except UserProfile.DoesNotExist:
+        return
+    new_profile_pic = instance.profile_pic
+    if new_profile_pic and new_profile_pic != old_profile_pic:
+        storage.default_storage.delete(old_profile_pic)
