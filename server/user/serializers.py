@@ -11,11 +11,12 @@ from django.core.files.base import ContentFile
 class UserProfileSerializer(serializers.ModelSerializer):
     """For user profile object"""
     otp = serializers.IntegerField(write_only=True)
+    total_uploads = serializers.SerializerMethodField()
 
     class Meta:
         model = models.UserProfile
-        fields = ('id', 'email', 'name', 'password',
-                  'college_name', 'profile_pic', 'otp',)
+        fields = ['id', 'email', 'name', 'password',
+                  'college_name', 'profile_pic', 'otp', 'total_uploads']
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -23,6 +24,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 'min_length': 5
             }
         }
+    
+    def get_total_uploads(self, obj):
+        notes_count = models.Note.objects.filter(user=obj).count()
+        return notes_count
 
     def create(self, validated_data):
         """Create and return a new user (overrides inbuilt create function)"""
@@ -30,14 +35,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
         profile_pic = validated_data.get('profile_pic', None)
         generated_otp = models.OTP.objects.filter(
             email=validated_data['email']).first()
-        
+
         if profile_pic:
             try:
                 print('insize')
                 profile_pic = ImageResize(profile_pic)
             except Exception as e:
                 raise serializers.ValidationError({'error': e})
-            
+
         # Check for OTP validation
         if not generated_otp or otp != generated_otp.otp_code:
             raise serializers.ValidationError({'error': 'Invalid OTP'})
@@ -72,7 +77,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
-
 
 class AuthTokenSerializer(serializers.Serializer):
     """Serializer for user auth token"""

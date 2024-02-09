@@ -132,6 +132,12 @@ class UserLimitedNotes(viewsets.ModelViewSet):
         if owner:
             serializer.save(user=owner, contributor=owner.name)
 
+    def update(self, request, *args, **kwargs):
+        # Remove 'url' from request.data before calling the parent update method
+        request.data.pop('url', None)
+
+        return super().update(request, *args, **kwargs)
+
 class Bookmarks(viewsets.ViewSet):
     """Add or remove bookmarks"""
     authentication_classes = [TokenAuthentication,]

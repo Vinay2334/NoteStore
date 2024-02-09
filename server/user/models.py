@@ -5,12 +5,9 @@ from django.conf import settings
 from django.core.files import storage
 from django.dispatch import receiver
 from django.core.validators import FileExtensionValidator, EmailValidator
-from PIL import Image
-from django.core.files.base import ContentFile
-from io import BytesIO
-from .helpers import ALLOWED_IMAGE_EXTENSIONS, ImageResize
+from .helpers import ALLOWED_IMAGE_EXTENSIONS
 from enum import Enum
-import os
+import logging
 
 """All models here"""
 
@@ -91,8 +88,6 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-    total_uploads = models.IntegerField(default=0)
-    total_downloads = models.IntegerField(default=0)
     liked_notes = models.ManyToManyField(Note, related_name='likes')
     bookmarks = models.ManyToManyField(
         Note, through='Bookmark', related_name='bookmarked_by')
@@ -151,12 +146,15 @@ class Comment(models.Model):
 
 
 @receiver(models.signals.pre_delete, sender=UserProfile)
-def delete_file_on_delete(sender, instance, using, **kwargs):
-    instance.profile_pic.delete(save=False)
+def delete_image_on_delete(sender, instance, using, **kwargs):
+    try:
+        instance.profile_pic.delete(save=False)
+    except Exception as e:
+        logging.error(f'delete_image_on_delete error: {e}')
 
 
 @receiver(models.signals.pre_save, sender=UserProfile)
-def delete_file_on_change(sender, instance, using, **kwargs):
+def delete_image_on_change(sender, instance, using, **kwargs):
     if not instance.pk:
         return False
     try:
@@ -167,3 +165,10 @@ def delete_file_on_change(sender, instance, using, **kwargs):
     new_profile_pic = instance.profile_pic
     if new_profile_pic and new_profile_pic != old_profile_pic:
         storage.default_storage.delete(old_profile_pic)
+
+@receiver(models.signals.pre_delete, sender=Note)
+def delete_note_on_delete(sender, instance, using, **kwargs):
+    try:
+        instance.url.delete(save=False)
+    except Exception as e:
+        logging.error(f'delete_note_on_delete error: {e}')
