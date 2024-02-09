@@ -71,7 +71,7 @@ class PrivateNoteApiTest(TestCase):
         serializer = NoteSerializer(notes, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data['results'], serializer.data)
 
     def test_notes_list_limited_to_user(self):
         """Test list of notes limited to a particular user"""
@@ -88,7 +88,7 @@ class PrivateNoteApiTest(TestCase):
         notes = Note.objects.filter(user=self.user)
         serializer = NoteSerializer(notes, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data['results'], serializer.data)
 
     def test_like_notes_functionality(self):
         """Test if a user can like a note"""
@@ -97,7 +97,7 @@ class PrivateNoteApiTest(TestCase):
         # Check like functionality
         self.client.post(reverse('note:toggle_likes', args=[user_note.id]))
         all_notes = self.client.get(ALL_NOTES)
-        liked_note_data = next(n for n in all_notes.data if n['id'] == user_note.id)
+        liked_note_data = next(n for n in all_notes.data ['results'] if n['id'] == user_note.id)
 
         self.assertTrue(liked_note_data['is_liked'])
         self.assertEqual(liked_note_data['likes_count'], 1)
@@ -105,7 +105,7 @@ class PrivateNoteApiTest(TestCase):
         # Check unlike functionality
         self.client.post(reverse('note:toggle_likes', args=[user_note.id]))
         all_notes = self.client.get(ALL_NOTES)
-        unliked_note_data = next(n for n in all_notes.data if n['id'] == user_note.id)
+        unliked_note_data = next(n for n in all_notes.data['results'] if n['id'] == user_note.id)
 
         self.assertFalse(unliked_note_data['is_liked'])
         self.assertEqual(unliked_note_data['likes_count'], 0)
@@ -117,7 +117,7 @@ class PrivateNoteApiTest(TestCase):
         user_liked_notes = self.client.get(reverse('note:user_likes'))
 
         self.assertEqual(user_liked_notes.status_code, status.HTTP_200_OK)
-        self.assertEqual(user_liked_notes.data[0]['id'], note.id)
+        self.assertEqual(user_liked_notes.data['results'][0]['id'], note.id)
 
     def test_retrieve_note(self):
         """Test retreiving a single note"""
