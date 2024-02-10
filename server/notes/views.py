@@ -11,24 +11,23 @@ from user.models import Note
 from notes import serializers
 from notes.permissions import IsOwner
 
-
 @extend_schema_view(
-    list=extend_schema(
+    get=extend_schema(
         parameters=[
             OpenApiParameter(
                 'title',
                 OpenApiTypes.STR,
-                description='Comma seperated list of title to filter'
+                description='Comma separated list of title to filter'
             ),
             OpenApiParameter(
                 'subject',
                 OpenApiTypes.STR,
-                description='Comma seperated list of subject'
+                description='Comma separated list of subject'
             ),
             OpenApiParameter(
                 'category',
                 OpenApiTypes.STR,
-                description='Comma seperated list of category'
+                description='Comma separated list of category'
             ),
         ]
     ),
@@ -50,7 +49,7 @@ class ListAllNotes(generics.ListAPIView):
         except Exception as e:
             print('ListAllNotes like: ', e)
         return response
-    
+
     def _params_to_list(self, qs):
         """Convert list of strings to Integer"""
         return qs.split(',')
@@ -69,6 +68,7 @@ class ListAllNotes(generics.ListAPIView):
             category_names = self._params_to_list(category)
             queryset = queryset.filter(category=category_names)
         return queryset.distinct()
+
 
 class ToggleLikes(APIView):
     """Like functionality."""
@@ -116,12 +116,13 @@ class UserLikeView(generics.ListAPIView):
             return response
         except Exception as e:
             return Response({"UserLikeView: error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
 class UserLimitedNotes(viewsets.ModelViewSet):
     """Manage notes Limited to the user"""
     serializer_class = serializers.NoteSerializer
     queryset = Note.objects.all()
-    authentication_classes = [TokenAuthentication,] 
+    authentication_classes = [TokenAuthentication,]
     permission_classes = [IsOwner]
 
     def get_queryset(self):
@@ -138,6 +139,7 @@ class UserLimitedNotes(viewsets.ModelViewSet):
 
         return super().update(request, *args, **kwargs)
 
+
 class Bookmarks(viewsets.ViewSet):
     """Add or remove bookmarks"""
     authentication_classes = [TokenAuthentication,]
@@ -147,17 +149,18 @@ class Bookmarks(viewsets.ViewSet):
     def get_queryset(self):
         user = self.request.user
         return user.bookmarks.all()
-    
+
     def list(self, request, *args, **kwargs):
         try:
             paginator = PageNumberPagination()
-            queryset = paginator.paginate_queryset(self.get_queryset(), request)
+            queryset = paginator.paginate_queryset(
+                self.get_queryset(), request)
             serializer = self.serializer_class(queryset, many=True)
             # return Response(serializer.data, status=status.HTTP_200_OK)
             return paginator.get_paginated_response(serializer.data)
         except Exception as e:
             return Response({"BookmarksView: error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     def create(self, request, *args, **kwargs):
         note_id = kwargs.get('note_id')
         user = request.user
@@ -174,7 +177,8 @@ class Bookmarks(viewsets.ViewSet):
                 return Response({'message': f'No Note with id {note_id}.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
 class RetrieveNote(generics.RetrieveAPIView):
     """Get a single note"""
     serializer_class = serializers.NoteDetailSerializer
