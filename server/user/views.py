@@ -1,4 +1,4 @@
-from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.views import ObtainAuthToken, APIView
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework import generics, authentication, permissions, status
@@ -6,15 +6,18 @@ from user import serializers
 from user.models import OTP, UserProfile
 
 # Create your views here.
+
+
 class UserCreateView(generics.CreateAPIView):
     """Create profiles"""
     serializer_class = serializers.UserProfileSerializer
-    
+
 
 class UserLoginApiView(ObtainAuthToken):
     """Handle creating user authentication token"""
     serializer_class = serializers.AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated user."""
@@ -25,6 +28,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Return the authenticated user"""
         return self.request.user
+
 
 class SendOtp(generics.CreateAPIView):
     """Send OTP when registering"""
@@ -37,7 +41,8 @@ class SendOtp(generics.CreateAPIView):
             return Response({'message': 'Email already registered. Please SignIn'}, status=status.HTTP_409_CONFLICT)
         try:
             otp_instance = OTP.objects.get(email=email)
-            serializer = self.get_serializer(instance=otp_instance, data=request.data)
+            serializer = self.get_serializer(
+                instance=otp_instance, data=request.data)
         except OTP.DoesNotExist:
             serializer = self.get_serializer(data=request.data)
 

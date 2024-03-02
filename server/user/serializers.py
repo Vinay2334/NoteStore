@@ -24,7 +24,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 'min_length': 5
             }
         }
-    
+
     def get_total_uploads(self, obj):
         notes_count = models.Note.objects.filter(user=obj).count()
         return notes_count
@@ -38,7 +38,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         if profile_pic:
             try:
-                print('insize')
                 profile_pic = ImageResize(profile_pic)
             except Exception as e:
                 raise serializers.ValidationError({'error': e})
@@ -61,7 +60,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """Update and return user."""
-        email = super().data.get('email')
+        # Email verification
+        email = validated_data.get('email', None)
+        otp = validated_data.get('otp', None)
+        if email and otp:
+            generated_otp = models.OTP.objects.filter(
+                email=validated_data['email']).first()
+            if not generated_otp:
+                raise serializers.ValidationError(
+                    {'error': 'OTP not generated'})
+            if generated_otp != otp:
+                raise serializers.ValidationError(
+                    {'error': 'OTP does not match'})
+        elif email:
+            raise serializers.ValidationError({'error': 'OTP not provided'})
+
         password = validated_data.pop('password', None)
         profile_pic = validated_data.get('profile_pic', None)
 
@@ -77,6 +90,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
 
 class AuthTokenSerializer(serializers.Serializer):
     """Serializer for user auth token"""
