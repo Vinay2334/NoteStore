@@ -77,18 +77,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         password = validated_data.pop('password', None)
         profile_pic = validated_data.get('profile_pic', None)
-
         if profile_pic:
             try:
                 validated_data['profile_pic'] = ImageResize(profile_pic)
             except Exception as e:
                 raise serializers.ValidationError({'error': e})
-
         user = super().update(instance, validated_data)
         if password:
             user.set_password(password)
             user.save()
-
         return user
 
 

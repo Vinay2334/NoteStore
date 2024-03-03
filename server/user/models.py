@@ -41,6 +41,7 @@ class Note(models.Model):
     )
     date_created = models.DateTimeField(default=timezone.now)
     likes_count = models.IntegerField(default=0)
+    tags = models.ManyToManyField('Tag')
 
     def __str__(self):
         return self.title
@@ -143,7 +144,17 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user.name} - {self.message}"
+    
+class Tag(models.Model):
+    """Tags for filtering Notes"""
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
 
+    def __str__(self):
+        return self.name
 
 @receiver(models.signals.pre_delete, sender=UserProfile)
 def delete_image_on_delete(sender, instance, using, **kwargs):
@@ -163,7 +174,7 @@ def delete_image_on_change(sender, instance, using, **kwargs):
     except UserProfile.DoesNotExist:
         return
     new_profile_pic = instance.profile_pic
-    if new_profile_pic and new_profile_pic != old_profile_pic:
+    if old_profile_pic and new_profile_pic and new_profile_pic != old_profile_pic:
         storage.default_storage.delete(old_profile_pic)
 
 @receiver(models.signals.pre_delete, sender=Note)

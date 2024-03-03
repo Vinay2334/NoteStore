@@ -2,6 +2,10 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from user import models
 
+def create_user(email='example@email.com', name= 'test', password = 'test12345'):
+    """Create and return a new user"""
+    return get_user_model().objects.create_user(email, name, password)
+
 class ModeltTests(TestCase):
     """Test models."""
     
@@ -41,3 +45,10 @@ class ModeltTests(TestCase):
             otp_code=1234,
         )
         self.assertEqual(otp.otp_code, otp.otp_code)
+
+    def test_create_tag(self):
+        """Test creating a tag is successful"""
+        user = create_user()
+        tag = models.Tag.objects.create(user=user, name='Tag1')
+
+        self.assertEqual(str(tag), tag.name)
