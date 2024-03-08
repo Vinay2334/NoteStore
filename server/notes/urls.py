@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from notes import views
 
 router = DefaultRouter()
-router.register('manage_notes', views.UserLimitedNotes)
+router.register('manage_notes', views.UserLimitedNotes, basename='manage_notes')
 router.register('bookmarks', views.Bookmarks, basename='bookmark')
 router.register('tags', views.TagViewSet)
 

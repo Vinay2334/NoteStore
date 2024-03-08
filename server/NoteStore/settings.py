@@ -167,8 +167,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {},
     'DEFAULT_PAGINATION_CLASS':
     'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':
-    2,
+    'PAGE_SIZE': 20,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # django-oauth-toolkit >= 1.0.0
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',

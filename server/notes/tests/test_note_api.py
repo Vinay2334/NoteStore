@@ -8,11 +8,16 @@ from rest_framework.test import APIClient
 
 from user.models import Note, Tag
 
-from notes.serializers import NoteSerializer
+from notes.serializers import NoteSerializer, TagSerializer
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-NOTE_URL = reverse('note:note-list')
+NOTE_URL = reverse('note:manage_notes-list')
 ALL_NOTES = reverse('note:all_notes')
+
+
+def detail_url(tag_id):
+    """Create and return a tag detail url."""
+    return reverse('note:manage_notes-detail', args=[tag_id])
 
 
 def create_note(user, **params):
@@ -99,15 +104,17 @@ class PrivateNoteApiTest(TestCase):
         # Check like functionality
         self.client.post(reverse('note:toggle_likes', args=[user_note.id]))
         all_notes = self.client.get(ALL_NOTES)
-        liked_note_data = next(n for n in all_notes.data ['results'] if n['id'] == user_note.id)
+        liked_note_data = next(
+            n for n in all_notes.data['results'] if n['id'] == user_note.id)
 
         self.assertTrue(liked_note_data['is_liked'])
         self.assertEqual(liked_note_data['likes_count'], 1)
-        
+
         # Check unlike functionality
         self.client.post(reverse('note:toggle_likes', args=[user_note.id]))
         all_notes = self.client.get(ALL_NOTES)
-        unliked_note_data = next(n for n in all_notes.data['results'] if n['id'] == user_note.id)
+        unliked_note_data = next(
+            n for n in all_notes.data['results'] if n['id'] == user_note.id)
 
         self.assertFalse(unliked_note_data['is_liked'])
         self.assertEqual(unliked_note_data['likes_count'], 0)
@@ -128,14 +135,14 @@ class PrivateNoteApiTest(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('comments', res.data)
-    
+
     def test_create_note_with_new_tags(self):
         """Test creating a note with new tags"""
         payload = {
             'title': 'Sample note',
             'subject': 'APPLIED_BIOLOGY',
             'category': 'NOTES',
-            'tags': [{'name':'Gg'}, {'name':'Mid term'}]
+            'tags': [{'name': 'Gg'}, {'name': 'Mid term'}]
         }
         res = self.client.post(NOTE_URL, payload, format='json')
 
@@ -149,7 +156,7 @@ class PrivateNoteApiTest(TestCase):
                 name=tag['name'],
                 user=self.user,
             ).exists()
-            self.assertTrue(exists) 
+            self.assertTrue(exists)
 
     def test_create_note_with_existing_tags(self):
         """Test creating a note with existing tags"""
@@ -159,11 +166,11 @@ class PrivateNoteApiTest(TestCase):
         # Construct the full path to the existing PDF file
         pdf_path = os.path.join(current_directory, 'testfile.pdf')
         payload = {
-                'title': 'Sample note',
-                'subject': 'APPLIED_BIOLOGY',
-                'category': 'NOTES',
-                'tags': [{'name': 'new tag'}, {'name': 'Mid break'}]
-            }
+            'title': 'Sample note',
+            'subject': 'APPLIED_BIOLOGY',
+            'category': 'NOTES',
+            'tags': [{'name': 'new tag'}, {'name': 'Mid break'}]
+        }
         res = self.client.post(NOTE_URL, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         # with open(pdf_path, 'rb') as pdf_file:
@@ -192,3 +199,43 @@ class PrivateNoteApiTest(TestCase):
                 user=self.user,
             ).exists()
             self.assertTrue(exists)
+
+    def test_create_tag_on_update(self):
+        """Test creating tag when updating a note"""
+        note = create_note(user=self.user)
+
+        payload = {'tags': [{'name': 'lunch'}]}
+        url = detail_url(note.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        new_tag = Tag.objects.get(user=self.user, name='lunch')
+        self.assertIn(new_tag, note.tags.all())
+
+    def test_update_recipe_assign_tag(self):
+        """Test assigning an exisiting tag when updating a note."""
+        tag_book = Tag.objects.create(user=self.user, name='book')
+        note = create_note(user=self.user)
+        note.tags.add(tag_book)
+
+        tag_new = Tag.objects.create(user=self.user, name='new')
+        payload = {'tags':[{'name':'new'}]}
+        url = detail_url(note.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(tag_new, note.tags.all())
+        self.assertNotIn(tag_book, note.tags.all())
+
+    def test_clear_note_tags(self):
+        """Test clearing a note tags."""
+        tag = Tag.objects.create(user=self.user, name='Des')
+        note = create_note(user=self.user)
+        note.tags.add(tag)
+
+        payload={'tags':[]}
+        url=detail_url(note.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(note.tags.count(), 0)
