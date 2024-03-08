@@ -32,7 +32,7 @@ class Note(models.Model):
   contributor = models.CharField(max_length=255, blank=True)
   url = models.FileField(
       upload_to='pdf/',
-      validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
+      validators=[FileExtensionValidator(allowed_extensions=['pdf'])], null=True)
   subject = models.CharField(max_length=200,
                              choices=[(tag.name, tag.value)
                                       for tag in SubjectCategory])

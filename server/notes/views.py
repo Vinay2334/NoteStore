@@ -198,7 +198,7 @@ class RetrieveNote(generics.RetrieveAPIView):
   pagination_class = PageNumberPagination
 
 
-class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class TagViewSet(mixins.DestroyModelMixin ,mixins.UpdateModelMixin ,mixins.ListModelMixin, viewsets.GenericViewSet):
   """Manage tags in the database"""
   serializer_class = serializers.TagSerializer
   queryset = Tag.objects.all()

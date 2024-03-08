@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -5,9 +6,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from user.models import Note
+from user.models import Note, Tag
 
 from notes.serializers import NoteSerializer
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 NOTE_URL = reverse('note:note-list')
 ALL_NOTES = reverse('note:all_notes')
@@ -126,3 +128,67 @@ class PrivateNoteApiTest(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('comments', res.data)
+    
+    def test_create_note_with_new_tags(self):
+        """Test creating a note with new tags"""
+        payload = {
+            'title': 'Sample note',
+            'subject': 'APPLIED_BIOLOGY',
+            'category': 'NOTES',
+            'tags': [{'name':'Gg'}, {'name':'Mid term'}]
+        }
+        res = self.client.post(NOTE_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        notes = Note.objects.filter(user=self.user)
+        self.assertEqual(notes.count(), 1)
+        note = notes[0]
+        self.assertEqual(note.tags.count(), 2)
+        for tag in payload['tags']:
+            exists = note.tags.filter(
+                name=tag['name'],
+                user=self.user,
+            ).exists()
+            self.assertTrue(exists) 
+
+    def test_create_note_with_existing_tags(self):
+        """Test creating a note with existing tags"""
+        tag_new = Tag.objects.create(user=self.user, name='new tag')
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Construct the full path to the existing PDF file
+        pdf_path = os.path.join(current_directory, 'testfile.pdf')
+        payload = {
+                'title': 'Sample note',
+                'subject': 'APPLIED_BIOLOGY',
+                'category': 'NOTES',
+                'tags': [{'name': 'new tag'}, {'name': 'Mid break'}]
+            }
+        res = self.client.post(NOTE_URL, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        # with open(pdf_path, 'rb') as pdf_file:
+        #     # Create a SimpleUploadedFile from the PDF file content
+        #     pdf_content = pdf_file.read()
+        #     pdf_uploaded = SimpleUploadedFile("testfile.pdf", pdf_content, content_type="application/pdf")
+
+        #     payload = {
+        #         'title': 'Sample note',
+        #         'subject': 'APPLIED_BIOLOGY',
+        #         'category': 'NOTES',
+        #         'url': pdf_uploaded,
+        #         'tags': [{'name': 'new tag'}, {'name': 'Mid break'}]
+        #     }
+
+        #     res = self.client.post(NOTE_URL, payload, format='multipart')
+        #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        notes = Note.objects.filter(user=self.user)
+        self.assertEqual(notes.count(), 1)
+        note = notes[0]
+        self.assertEqual(note.tags.count(), 2)
+        self.assertIn(tag_new, note.tags.all())
+        for tag in payload['tags']:
+            exists = note.tags.filter(
+                name=tag['name'],
+                user=self.user,
+            ).exists()
+            self.assertTrue(exists)
