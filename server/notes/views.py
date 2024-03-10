@@ -22,6 +22,9 @@ from notes.permissions import IsOwner
     OpenApiParameter('category',
                      OpenApiTypes.STR,
                      description='Comma separated list of category'),
+    OpenApiParameter('order_by_date',
+                     OpenApiTypes.STR,
+                     description='order by date'),
 ]), )
 class ListAllNotes(generics.ListAPIView):
   """List all the notes"""
@@ -49,6 +52,7 @@ class ListAllNotes(generics.ListAPIView):
     title = self.request.query_params.get('title')
     subject = self.request.query_params.get('subject')
     category = self.request.query_params.get('category')
+    order_by_date = self.request.query_params.get('order_by_date')
     queryset = self.queryset
     if title:
       queryset = queryset.filter(title__icontains=title)
@@ -57,7 +61,10 @@ class ListAllNotes(generics.ListAPIView):
       queryset = queryset.filter(subject__in=subject_names)
     if category:
       category_names = self._params_to_list(category)
-      queryset = queryset.filter(category=category_names)
+      queryset = queryset.filter(category__in=category_names)
+    # Later
+    if order_by_date == 'asc':
+      queryset.order_by('date_created')
     return queryset.distinct()
 
 

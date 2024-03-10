@@ -6,19 +6,19 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from user.models import Note, Tag
+from user.models import Note, Tag, Comment
 
 from notes.serializers import NoteSerializer, TagSerializer
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 NOTE_URL = reverse('note:manage_notes-list')
 ALL_NOTES = reverse('note:all_notes')
+COMMENT_URL = reverse('comment:manage_comment-list')
 
 
 def detail_url(tag_id):
     """Create and return a tag detail url."""
     return reverse('note:manage_notes-detail', args=[tag_id])
-
 
 def create_note(user, **params):
     """Create and return a sample note"""
@@ -239,3 +239,33 @@ class PrivateNoteApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(note.tags.count(), 0)
+
+    def test_rating_avg(self):
+        """Test if the correct avg of the rating is being calulated"""
+        note = create_note(user=self.user)
+        payload = {
+            'message':'new comment',
+            'note':note.id,
+            'rating':2,
+        }
+        res = self.client.post(COMMENT_URL, payload, format='json')
+        payload['rating'] = 4
+        self.client.post(COMMENT_URL, payload, format='json')
+        retrieved_note = self.client.get(reverse('note:retrieve_note', kwargs={'pk': note.id}))
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(retrieved_note.status_code, status.HTTP_200_OK)
+        self.assertEqual(3.0, retrieved_note.data['avg_rating'])
+    
+    def test_comment_rating_validation(self):
+        """Test validating comment rating of a note"""
+        note = create_note(user=self.user)
+        comment = Comment.objects.create(user=self.user, message='parent comment', note=note, rating=4)
+        payload = {
+            'message':'new comment',
+            'note':note.id,
+        }
+        res = self.client.post(COMMENT_URL, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        payload = {'parent':comment.id, 'rating':4}
+        res = self.client.post(COMMENT_URL, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

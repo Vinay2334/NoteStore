@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import UserNoteComment
 
 router = DefaultRouter()
-router.register('manage', UserNoteComment, basename='manage_comment')
+router.register('manage_comment', UserNoteComment, basename='manage_comment')
 
 app_name = 'comment'
 

@@ -8,16 +8,21 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'message', 'created_at', 'updated_at', 'parent', 'note', 'user_detail']
+        fields = ['id', 'message', 'created_at', 'updated_at', 'parent', 'note', 'user_detail', 'rating']
         read_only_fields = ['id', 'created_at', 'updated_at',]
 
     def validate(self, attrs):
         parent = attrs.get('parent', None)
         note = attrs.get('note', '')
+        rating = attrs.get('rating', None)
+        if not parent and not rating:
+            raise serializers.ValidationError('Please provide the rating too')
+        if parent and rating:
+            raise serializers.ValidationError('Rating can not be provided by nested comment')
         if parent and not Comment.objects.filter(id=parent.id, note_id=note.id).exists():
             raise serializers.ValidationError('Parent and child note do not match')
         return attrs
-    
+
     def get_user_detail(self, obj):
         # Get the user who made the comment
         user_detail = {

@@ -37,6 +37,7 @@ class CommentAPIPublicTests(TestCase):
         payload = {
             'message': 'test comment',
             'note': note.id,
+            'rating':4,
         }
         res = self.client.post(COMMENT_URL, payload)
 
@@ -63,6 +64,7 @@ class CommentAPIPrivateTests(TestCase):
         payload = {
             'message': 'test comment',
             'note': note.id,
+            'rating':4,
         }
         res = self.client.post(COMMENT_URL, payload)
         comment = Comment.objects.filter(id=res.data['id']).first()
@@ -73,7 +75,7 @@ class CommentAPIPrivateTests(TestCase):
 
         note = create_note(user=self.user)
 
-        payload = {'message': 'test comment', 'note': note.id}
+        payload = {'message': 'test comment', 'note': note.id, 'rating':4}
 
         res1 = self.client.post(COMMENT_URL, payload)
         res2 = self.client.post(COMMENT_URL, payload)
@@ -95,26 +97,25 @@ class CommentAPIPrivateTests(TestCase):
 
         note = create_note(user=self.user)
 
-        payload = {'message': 'test comment', 'note': note.id}
+        payload = {'message': 'test comment', 'note': note.id, 'rating':4}
 
         res = self.client.post(COMMENT_URL, payload)
 
         comment_to_update = res.data['id']
-        update_message = 'updated message'
-        update_payload = {'message': update_message}
+        update_payload = {'message': 'update_message', 'rating':4}
 
         res_update = self.client.patch(
             f'{COMMENT_URL}{comment_to_update}/', update_payload)
         self.assertEqual(res_update.status_code, status.HTTP_200_OK)
         self.assertEqual(Comment.objects.get(
-            id=comment_to_update).message, update_message)
+            id=comment_to_update).message, 'update_message')
 
     def test_parent_child_noteid_same(self):
         """Test if parent and child both have the same note id"""
 
         note = create_note(user=self.user)
         note2 = create_note(user=self.user)
-        payload = {'message': 'test comment', 'note': note.id}
+        payload = {'message': 'test comment', 'note': note.id, 'rating':4}
         res = self.client.post(COMMENT_URL, payload)
         payload = {'message': 'test comment',
                    'note': note2.id, 'parent': res.data['id']}

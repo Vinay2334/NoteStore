@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.files import storage
 from django.dispatch import receiver
-from django.core.validators import FileExtensionValidator, EmailValidator
+from django.core.validators import FileExtensionValidator, EmailValidator, MaxValueValidator
 from .helpers import ALLOWED_IMAGE_EXTENSIONS
 from enum import Enum
 import logging
@@ -149,6 +149,7 @@ class Comment(models.Model):
   message = models.TextField()
   created_at = models.DateTimeField(default=timezone.now)
   updated_at = models.DateTimeField(auto_now=True)
+  rating = models.IntegerField(default=0,validators=[MaxValueValidator(5)])
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   note = models.ForeignKey(Note, on_delete=models.CASCADE)
   parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
