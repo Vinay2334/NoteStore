@@ -32,10 +32,12 @@ class Note(models.Model):
   contributor = models.CharField(max_length=255, blank=True)
   url = models.FileField(
       upload_to='pdf/',
-      validators=[FileExtensionValidator(allowed_extensions=['pdf'])], null=True)
+      validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
+      null=True)
   subject = models.CharField(max_length=200,
                              choices=[(tag.name, tag.value)
                                       for tag in SubjectCategory])
+  file_size = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
   category = category = models.CharField(max_length=20,
                                          choices=[(tag.name, tag.value)
                                                   for tag in NoteCategory])
@@ -149,7 +151,7 @@ class Comment(models.Model):
   message = models.TextField()
   created_at = models.DateTimeField(default=timezone.now)
   updated_at = models.DateTimeField(auto_now=True)
-  rating = models.IntegerField(default=0,validators=[MaxValueValidator(5)])
+  rating = models.IntegerField(default=0, validators=[MaxValueValidator(5)])
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   note = models.ForeignKey(Note, on_delete=models.CASCADE)
   parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)

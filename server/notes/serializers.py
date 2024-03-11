@@ -25,6 +25,7 @@ class NoteSerializer(serializers.ModelSerializer):
             'url',
             'subject',
             'category',
+            'file_size',
             'contributor',
             'date_created',
             'likes_count',
@@ -37,6 +38,7 @@ class NoteSerializer(serializers.ModelSerializer):
             'contributor',
             'date_created',
             'likes_count',
+            'file_size',
         ]
 
     def _get_or_create_tags(self, tags, note):
@@ -53,9 +55,13 @@ class NoteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Create a note"""
         tags = validated_data.pop('tags', [])
+       # Calculating size of the uploaded file
+        pdf_file = validated_data.get('url')
+        if pdf_file:
+          size_bytes = pdf_file.size/(1024*1024)
+          validated_data['file_size'] = size_bytes
         note = Note.objects.create(**validated_data)
         self._get_or_create_tags(tags, note)
-
         return note
 
     def update(self, instance, validated_data):
