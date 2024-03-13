@@ -40,6 +40,7 @@ class PublicUserApiTests(TestCase):
         payload = {
             'email': email,
             'password': 'testpass123',
+            'confirm_password': 'testpass123',
             'name': 'Test name',
             'college_name': 'Test_college',
             'otp': otp.otp_code
@@ -69,6 +70,7 @@ class PublicUserApiTests(TestCase):
         payload = {
             'email': 'test@example.com',
             'password': 'pa',
+          'confirm_password': 'testpass123',
             'name': 'Test name',
             'college_name': 'Test_college',
         }
@@ -163,7 +165,7 @@ class PrivateUserAPITests(TestCase):
     
     def test_update_user_profile(self):
         """Test updating the user profile for the authenticated user"""
-        payload = {'name': 'Updated_name', 'college_name': 'new_college', 'password': 'password'}
+        payload = {'name': 'Updated_name', 'college_name': 'new_college', 'password': 'password', 'confirm_password': 'password'}
 
         res = self.client.patch(ME_URL, payload)
 
