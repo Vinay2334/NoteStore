@@ -3,3 +3,5 @@
 **/migrations/
 profile_pics
 pdfs
+env
+pyvenv.cfg
