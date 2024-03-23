@@ -2,27 +2,101 @@
 import {
   AppBar,
   Box,
-  Button,
-  Container,
   Tab,
   Tabs,
   Toolbar,
   Typography,
   useMediaQuery,
   Avatar,
+  Container,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import React, { useState } from "react";
 import { useTheme } from "@mui/material";
 import { nav_data } from "@/components/componentData";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
+import AvatarNav from "./AvatarNav";
+import DrawerNav from "./DrawerNav";
+
+type Props = {};
+function Navbar({}: Props) {
+  const [value, setValue] = useState(null);
+  const theme = useTheme();
+  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  return (
+    <React.Fragment>
+      <AppBar>
+        <Toolbar>
+          <Typography>Logo</Typography>
+          {isMatch ? (
+            <DrawerNav />
+          ) : (
+            <>
+              <Box>
+                <Tabs
+                  value={value}
+                  onChange={(e, value) => setValue(value)}
+                  indicatorColor="secondary"
+                  textColor="inherit"
+                >
+                  {nav_data.map((item, index) => (
+                    <Tab key={index} label={`${item}`} />
+                  ))}
+                </Tabs>
+              </Box>
+              {/* <Box
+                boxSizing={"border-box"}
+                display="flex"
+                alignItems={"center"}
+                gap={"10px"}
+                sx={{ marginLeft: "auto" }}
+              >
+                <Search>
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    placeholder="Search…"
+                    inputProps={{ "aria-label": "search" }}
+                  />
+                </Search>
+                <AvatarNav />
+              </Box> */}
+            </>
+          )}
+          <Box
+            boxSizing={"border-box"}
+            display="flex"
+            alignItems={"center"}
+            gap={"10px"}
+            sx={{
+              marginLeft: 'auto'
+            }}
+          >
+            {/* marginLeft: "auto", */}
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+            <AvatarNav />
+          </Box>
+        </Toolbar>
+      </AppBar>
+    </React.Fragment>
+  );
+}
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
+  display: "flex",
+  alignItems: "center",
   backgroundColor: alpha(theme.palette.common.white, 0.15),
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
@@ -61,46 +135,4 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-
-type Props = {};
-function Navbar({}: Props) {
-  const [value, setValue] = useState(null);
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-  return (
-    <React.Fragment>
-      <AppBar>
-        <Toolbar>
-          <Typography>Logo</Typography>
-          {/* <DrawerNav /> */}
-          <Box>
-            <Tabs
-              value={value}
-              onChange={(e, value) => setValue(value)}
-              indicatorColor="secondary"
-              textColor="inherit"
-            >
-              {nav_data.map((item, index) => (
-                <Tab key={index} label={`${item}`} />
-              ))}
-            </Tabs>
-          </Box>
-          <Box display="flex" gap={"20px"} sx={{ marginLeft: "auto" }}>
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
-              />
-            </Search>
-            <Avatar src="/DefaultProfile.png"/>
-          </Box>
-        </Toolbar>
-      </AppBar>
-    </React.Fragment>
-  );
-}
-
 export default Navbar;

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-)j^+)5*1%8o&6p3luf0m)1%5y6pesvr#1!wun=*)(@*^lz45#6
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+CORS_ORIGIN_ALLOW_ALL = True  
 # replit
 ALLOWED_HOSTS = ['*', 'cb1a0754-b29b-4fef-a985-935aff18927d.id.repl.co']
 CSRF_TRUSTED_ORIGINS = [
@@ -59,9 +59,11 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -70,6 +72,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000"
+# ]
 
 ROOT_URLCONF = 'NoteStore.urls'
 
