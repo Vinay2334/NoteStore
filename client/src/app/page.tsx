@@ -10,9 +10,17 @@ import { AppDispatch } from "@/redux/store";
 export default function Home() {
   const dispatch = useDispatch();
   useEffect(() => {
-    const result = fetch_all_notes();
-    dispatch(setNotes(result));
-  })
+    const fetchData = async () => {
+      try {
+        const result = await fetch_all_notes();
+        dispatch(setNotes(result));
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+      }
+    };
+
+    fetchData();
+  }, [dispatch]);
   return (
     <main>
       <h1>Headings</h1>

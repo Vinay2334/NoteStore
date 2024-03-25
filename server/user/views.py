@@ -38,7 +38,7 @@ class SendOtp(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         if UserProfile.objects.filter(email=email).exists():
-            return Response({'message': 'Email already registered. Please SignIn'}, status=status.HTTP_409_CONFLICT)
+            return Response({'error': 'Email already registered. Please SignIn'}, status=status.HTTP_409_CONFLICT)
         try:
             otp_instance = OTP.objects.get(email=email)
             serializer = self.get_serializer(

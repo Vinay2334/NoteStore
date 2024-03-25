@@ -1,44 +1,31 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 type InitialState = {
-  value: AuthState;
-};
-
-type AuthState = {
-  isAuth: boolean;
-  username: string;
-  uid: string;
-  isAdmin: boolean;
+  loading: boolean;
+  token: string;
 };
 
 const initialState = {
-  value: {
-    isAuth: false,
-    username: "",
-    uid: "",
-    isAdmin: false,
-  } as AuthState,
+  loading: false,
+  token: "",
 } as InitialState;
 
 export const auth = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logOut: () => {
-      return initialState;
+    setLoading(state, action){
+      state.loading = action.payload;
     },
-    logIn: (state, action: PayloadAction<string>) => {
-      return {
-        value: {
-          isAuth: true,
-          username: action.payload,
-          uid: "efew",
-          isAdmin: false,
-        },
-      };
-    },
+    setToken(state, action){
+      state.token = action.payload;
+    }
   },
+  // extraReducers: (builder) => {
+  //   builder.addCase(sendOtp.fulfilled, (state, action) => {
+      
+  //   })
+  // }
 });
 
-export const {logIn, logOut} = auth.actions
+export const {setLoading, setToken} = auth.actions
 export default auth.reducer

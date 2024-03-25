@@ -33,7 +33,7 @@ export const notes = createSlice({
   initialState,
   reducers: {
     setNotes(state, action) {
-      state = action.payload;
+      state.results = action.payload.results;
     },
   },
 });

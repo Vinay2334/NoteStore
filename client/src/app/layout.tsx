@@ -7,6 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Navbar from "@/components/Navbar/Navbar";
 import './globals.css'
 import { ReduxProvider } from "@/redux/provider";
+import AppAlert from "@/components/AppAlert";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,8 +29,8 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             {/* <ReduxProvider>{children}</ReduxProvider> */}
             <CssBaseline />
-            <Navbar/>
             <ReduxProvider>
+            <Navbar/>
             {children}
             </ReduxProvider>
           </ThemeProvider>

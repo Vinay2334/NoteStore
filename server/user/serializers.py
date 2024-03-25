@@ -38,11 +38,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
     password = attrs.get('password')
     confirm_password = attrs.get('confirm_password')
     if password != confirm_password:
-      raise serializers.ValidationError('Passwords do not match')
+      raise serializers.ValidationError({'error':'Passwords do not match'})
     return attrs
 
   def create(self, validated_data):
     """Create and return a new user (overrides inbuilt create function)"""
+    print(validated_data.get('email'))
     otp = validated_data.pop('otp', None)
     profile_pic = validated_data.get('profile_pic', None)
     generated_otp = models.OTP.objects.filter(
@@ -66,7 +67,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         name=validated_data['name'],
         password=validated_data['password'],
         profile_pic=profile_pic,
-        college_name=validated_data['college_name'],
+        college_name=validated_data.get('college_name', None),
     )
     return user
 
@@ -91,7 +92,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
       try:
         validated_data['profile_pic'] = ImageResize(profile_pic)
       except Exception as e:
-        raise serializers.ValidationError({'error': e})
+        raise serializers.ValidationError({'error': str(e)})
     user = super().update(instance, validated_data)
     if password:
       user.set_password(password)

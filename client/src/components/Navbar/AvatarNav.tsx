@@ -4,17 +4,21 @@ import {blue} from '@mui/material/colors'
 import { useTheme } from '@emotion/react';
 import { styled, alpha } from "@mui/material/styles";
 import { Avatar, Box } from '@mui/material';
+import { useAppSelector } from '@/redux/store';
+import { useAppDispatch } from '@/redux/hooks';
+import {handleOpen} from '@/redux/slices/modalSlice';
 type Props = {}
 
 function AvatarNav({}: Props) {
-    const theme = useTheme()
-
+    const theme = useTheme();
+    const dispatch = useAppDispatch();
   return (
         <Dropdown>
             <MenuButton sx={{padding: '0','background-color': 'inherit', border:'none'}}>
               <Avatar sx={{padding:'0'}} src="/DefaultProfile.png" />
             </MenuButton>
             <Menu slots={{ listbox: Listbox }}>
+            <MenuItem onClick={() => dispatch(handleOpen())}>Login/SignUp</MenuItem>
             <MenuItem>Profile</MenuItem>
             <MenuItem>Language settings</MenuItem>
             <MenuItem>Log out</MenuItem>
