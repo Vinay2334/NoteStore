@@ -6,6 +6,11 @@ export interface registerUserInterface {
   otp: string;
 }
 
+export interface loginUserInterface{
+  email: string;
+  password: string;
+}
+
 export interface userInterface {
   email: string;
   name: string;

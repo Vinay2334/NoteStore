@@ -112,6 +112,7 @@ class AuthTokenSerializer(serializers.Serializer):
     """Validate and authenticate the user"""
     email = attrs.get('email')
     password = attrs.get('password')
+    print(email, password)
     user = authenticate(
         request=self.context.get('request'),
         username=email,

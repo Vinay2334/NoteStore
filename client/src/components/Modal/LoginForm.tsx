@@ -1,6 +1,9 @@
 import { useAppDispatch } from "@/redux/hooks";
+import { setOpenAlert } from "@/redux/slices/alertSlice";
 import { handleClose, setSignUpView } from "@/redux/slices/modalSlice";
 import { useAppSelector } from "@/redux/store";
+import { loginUser } from "@/services/operations/userApi";
+import { loginUserInterface } from "@/typings";
 import {
   Box,
   Button,
@@ -12,12 +15,6 @@ import {
 import { blue } from "@mui/material/colors";
 import React from "react";
 import { useForm } from "react-hook-form";
-
-type FormValues = {
-  email: string;
-  password: string;
-};
-
 type Props = {};
 
 function LoginForm({}: Props) {
@@ -26,7 +23,7 @@ function LoginForm({}: Props) {
   const handleCloseModal = () => {
     dispatch(handleClose());
   };
-  const form = useForm<FormValues>({
+  const form = useForm<loginUserInterface>({
     defaultValues: {
       email: "",
       password: "",
@@ -34,12 +31,22 @@ function LoginForm({}: Props) {
   });
   const { register, handleSubmit, formState, control } = form;
   const { errors } = formState;
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
+  const onSubmit = async(data: loginUserInterface) => {
+    try {
+      const response = await dispatch(loginUser(data)).unwrap();
+      dispatch(setOpenAlert({message: `Logged in Successfully`, severe:"success"}));
+    } catch (error: any) {
+      dispatch(
+        setOpenAlert({
+          message: `${error.errors[0].detail}`,
+          severe: "error",
+        })
+      );
+    }
   };
   const switchToSignUp = () => {
-    dispatch(setSignUpView())
-  }
+    dispatch(setSignUpView());
+  };
   return (
     <React.Fragment>
       <Typography variant="h5" mb={3}>
