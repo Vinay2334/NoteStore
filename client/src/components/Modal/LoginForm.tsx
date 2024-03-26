@@ -5,8 +5,6 @@ import { useAppSelector } from "@/redux/store";
 import { getUser, loginUser } from "@/services/operations/userApi";
 import { loginUserInterface } from "@/typings";
 import errorHandler from "@/utils/errorHandler";
-import CircularProgress from "@mui/material/CircularProgress";
-import Cookies from 'js-cookie';
 import {
   Box,
   Button,
@@ -30,14 +28,13 @@ function LoginForm({}: Props) {
       password: "",
     },
   });
-  const { register, handleSubmit, formState, control } = form;
+  const { register, handleSubmit, formState } = form;
   const { errors } = formState;
   const onSubmit = async(data: loginUserInterface) => {
     try {
       const response = await dispatch(loginUser(data)).unwrap();
       await dispatch(getUser(response.token)).unwrap();
       dispatch(setOpenAlert({message: `Logged in Successfully`, severe:"success"}));
-      console.log(Cookies.get("auth_token"));
     } catch (error: any) {
       dispatch(
         setOpenAlert({
@@ -96,8 +93,9 @@ function LoginForm({}: Props) {
             type="submit"
             variant="contained"
             color="primary"
+            disabled = {loading}
           >
-            {loading ? <CircularProgress sx={{color: 'wheat', width:'70%'}}/> : "Login"}
+            Login
           </Button>
           <Box display="flex">
             <Typography sx={{ color: "gray", mr: "8px" }}>

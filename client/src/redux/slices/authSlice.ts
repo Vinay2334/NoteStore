@@ -10,8 +10,8 @@ type InitialState = {
 
 const initialState = {
   loading: false,
-  token: "",
-  error: Cookies.get("auth_token") ? Cookies.get("auth_token") : "",
+  token: Cookies.get("auth_token") ? Cookies.get("auth_token") : "",
+  error: "",
 } as InitialState;
 
 export const auth = createSlice({

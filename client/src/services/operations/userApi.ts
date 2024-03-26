@@ -9,6 +9,7 @@ import {
 import { store } from "@/redux/store";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { headers } from "next/headers";
+import Cookies from "js-cookie";
 
 const { REGISTER_USER, SEND_OTP, LOGIN_USER, GET_USER } = user_endpoints;
 
@@ -32,6 +33,7 @@ export const loginUser = createAsyncThunk(
   async (userdata: loginUserInterface, { rejectWithValue }) => {
     try {
       const response = await apiConnector("POST", LOGIN_USER, userdata);
+      Cookies.set('auth_token', response.data.token);
       return response.data;
     } catch (error: any) {
       console.log("LOGIN USER ERROR.............", error);
