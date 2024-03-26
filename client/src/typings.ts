@@ -6,16 +6,15 @@ export interface registerUserInterface {
   otp: string;
 }
 
-export interface loginUserInterface{
+export interface loginUserInterface {
   email: string;
   password: string;
 }
 
 export interface userInterface {
   email: string;
-  name: string;
-  password: string;
-  confirm_password: string;
-  college_name: string | null;
-  profile_pic: File | null;
+  username: string;
+  college_name?: string | null;
+  profile_pic?: string | null;
+  error: any;
 }

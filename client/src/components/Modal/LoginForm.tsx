@@ -1,9 +1,12 @@
 import { useAppDispatch } from "@/redux/hooks";
 import { setOpenAlert } from "@/redux/slices/alertSlice";
-import { handleClose, setSignUpView } from "@/redux/slices/modalSlice";
+import { setSignUpView } from "@/redux/slices/modalSlice";
 import { useAppSelector } from "@/redux/store";
-import { loginUser } from "@/services/operations/userApi";
+import { getUser, loginUser } from "@/services/operations/userApi";
 import { loginUserInterface } from "@/typings";
+import errorHandler from "@/utils/errorHandler";
+import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from 'js-cookie';
 import {
   Box,
   Button,
@@ -18,11 +21,9 @@ import { useForm } from "react-hook-form";
 type Props = {};
 
 function LoginForm({}: Props) {
-  const { open, view } = useAppSelector((state) => state.modalReducer);
+  const { view } = useAppSelector((state) => state.modalReducer);
+  const {loading} = useAppSelector((state) => state.authReducer);
   const dispatch = useAppDispatch();
-  const handleCloseModal = () => {
-    dispatch(handleClose());
-  };
   const form = useForm<loginUserInterface>({
     defaultValues: {
       email: "",
@@ -34,11 +35,13 @@ function LoginForm({}: Props) {
   const onSubmit = async(data: loginUserInterface) => {
     try {
       const response = await dispatch(loginUser(data)).unwrap();
+      await dispatch(getUser(response.token)).unwrap();
       dispatch(setOpenAlert({message: `Logged in Successfully`, severe:"success"}));
+      console.log(Cookies.get("auth_token"));
     } catch (error: any) {
       dispatch(
         setOpenAlert({
-          message: `${error.errors[0].detail}`,
+          message: `${errorHandler(error.errors)}`,
           severe: "error",
         })
       );
@@ -94,7 +97,7 @@ function LoginForm({}: Props) {
             variant="contained"
             color="primary"
           >
-            Login
+            {loading ? <CircularProgress sx={{color: 'wheat', width:'70%'}}/> : "Login"}
           </Button>
           <Box display="flex">
             <Typography sx={{ color: "gray", mr: "8px" }}>

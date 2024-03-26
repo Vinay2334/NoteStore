@@ -11,7 +11,7 @@ type Props = {};
 
 function AppAlert({}: Props) {
   const dispatch = useAppDispatch();
-  const { open, vertical, horizontal, severe, title, message, transition } =
+  const { open, vertical, horizontal, severe, title, message, duration, transition } =
     useAppSelector((state) => state.alertReducer);
 
   return (
@@ -19,7 +19,7 @@ function AppAlert({}: Props) {
       anchorOrigin={{ vertical, horizontal }}
       open={open}
       TransitionComponent={transition}
-      autoHideDuration={5000}
+      autoHideDuration={duration}
       onClose={() => dispatch(setCloseAlert())}
       key={vertical + horizontal}
     >

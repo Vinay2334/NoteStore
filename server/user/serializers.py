@@ -43,7 +43,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
   def create(self, validated_data):
     """Create and return a new user (overrides inbuilt create function)"""
-    print(validated_data.get('email'))
     otp = validated_data.pop('otp', None)
     profile_pic = validated_data.get('profile_pic', None)
     generated_otp = models.OTP.objects.filter(
@@ -112,7 +111,6 @@ class AuthTokenSerializer(serializers.Serializer):
     """Validate and authenticate the user"""
     email = attrs.get('email')
     password = attrs.get('password')
-    print(email, password)
     user = authenticate(
         request=self.context.get('request'),
         username=email,
