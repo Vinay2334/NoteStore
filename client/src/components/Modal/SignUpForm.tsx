@@ -92,7 +92,7 @@ function SignUpForm({}: Props) {
     try {
       if (!data.otp) {
         dispatch(
-          setOpenAlert({ message: "otp not provided", severe: "error" })
+          setOpenAlert({ message: "OTP not provided", severe: "error" })
         );
         return;
       }

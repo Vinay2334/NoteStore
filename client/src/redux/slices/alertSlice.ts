@@ -11,6 +11,7 @@ export interface AlertState {
   severe: AlertColor | string;
   title: string;
   message: string;
+  duration: number;
   transition: React.ComponentType<
     TransitionProps & {
       children: React.ReactElement<any, any>;
@@ -25,6 +26,7 @@ const initialState: AlertState = {
   severe: "",
   title: "",
   message: "",
+  duration: 3000,
   transition: Slide,
 };
 export const modal = createSlice({

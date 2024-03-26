@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import notesReducer from './slices/notesSlice';
 import modalReducer from './slices/modalSlice';
 import alertReducer from './slices/alertSlice';
+import userProfileReducer from './slices/userProfileSlice';
 import { TypedUseSelectorHook, useSelector } from 'react-redux';
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         notesReducer,
         modalReducer,
         alertReducer,
+        userProfileReducer,
     }
 })
 

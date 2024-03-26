@@ -2,6 +2,7 @@ from rest_framework.authtoken.views import ObtainAuthToken, APIView
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework import generics, authentication, permissions, status
+from rest_framework.authtoken.models import Token 
 from user import serializers
 from user.models import OTP, UserProfile
 
@@ -17,6 +18,19 @@ class UserLoginApiView(ObtainAuthToken):
     """Handle creating user authentication token"""
     serializer_class = serializers.AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+    def post(self, request, *args, **kwargs):
+        serializer=self.serializer_class(data=request.data, context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, _ = Token.objects.get_or_create(user=user)
+        response = super().post(request, *args, **kwargs)
+        response.set_cookie(
+            key = 'auth_token',
+            value = token.key,
+            httponly = True,
+        )
+        return response
 
 
 class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
