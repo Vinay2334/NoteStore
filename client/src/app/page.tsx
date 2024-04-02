@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setNotes } from "../redux/slices/notesSlice";
 import { AppDispatch } from "@/redux/store";
 import { Box, Grid, Typography } from "@mui/material";
+import Collection from '@/components/Collection/Collection';
 import Banner from "@/components/Banner/Banner";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
   return (
     <main>
       <Banner/>
+      <Collection/>
     </main>
   );
 }

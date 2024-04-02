@@ -110,7 +110,7 @@ function SignUpForm({}: Props) {
         setOpenAlert({
           message: `${error?.response.data.errors[0].detail}`,
           severe: "error",
-        })
+        }) 
       );
     }
   };
