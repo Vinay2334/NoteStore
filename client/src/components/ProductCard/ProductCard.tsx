@@ -73,7 +73,7 @@ const Paper = styled(BasePaper)({
 const Img = styled("img")({
   height: "90%",
   width: "60%",
-  boxShadow: "5px 8px 10px rgba(0, 0, 0, 0.2) ",
+  boxShadow: "5px 10px 10px rgba(0, 0, 0, 0.2) ",
 });
 
 export default ProductCard;

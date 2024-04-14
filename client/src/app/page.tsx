@@ -9,12 +9,14 @@ import { AppDispatch } from "@/redux/store";
 import { Box, Grid, Typography } from "@mui/material";
 import Collection from '@/components/Collection/Collection';
 import Banner from "@/components/Banner/Banner";
+import Courses from "@/components/Courses/Courses";
 
 export default function Home() {
   const dispatch = useDispatch();
   return (
     <main>
       <Banner/>
+      <Courses/>
       <Collection/>
     </main>
   );
