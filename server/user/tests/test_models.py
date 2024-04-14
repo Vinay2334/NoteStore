@@ -22,6 +22,13 @@ class ModeltTests(TestCase):
 
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
+
+    def test_create_subject(self):
+        """Test creating subject"""
+        subject = models.Subject.objects.create(
+            sub_name='subject'
+        )
+        self.assertEqual(str(subject), subject.sub_name)
     
     def test_create_note(self):
         """Test creating a note is successfull"""
@@ -30,10 +37,13 @@ class ModeltTests(TestCase):
             'test',
             'testpass123',
         )
+        subject = models.Subject.objects.create(
+            sub_name='subject'
+        )
         note = models.Note.objects.create(
             user=user,
             title='Sample note',
-            subject='Applied Mathematics',
+            subject=subject,
             category='notes',
         )
         self.assertEqual(str(note), note.title)
