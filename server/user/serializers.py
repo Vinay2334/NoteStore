@@ -91,6 +91,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
       try:
         validated_data['profile_pic'] = ImageResize(profile_pic)
       except Exception as e:
+        print('profile pic resize error', e)
         raise serializers.ValidationError({'error': str(e)})
     user = super().update(instance, validated_data)
     if password:

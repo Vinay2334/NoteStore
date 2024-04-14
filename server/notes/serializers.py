@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from comments.serializers import CommentSerializer
-from user.models import Note, Comment, Tag
+from user.helpers import ImageResize
+from user.models import Note, Comment, Tag, Subject
 from django.db.models import Avg
+
 
 class TagSerializer(serializers.ModelSerializer):
     """Serializer for tags."""
@@ -9,6 +11,15 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['id', 'name']
+        read_only_fields = ['id']
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    """Serializer for Subjects"""
+
+    class Meta:
+        model = Subject
+        fields = ['id', 'sub_name']
         read_only_fields = ['id']
 
 
@@ -22,6 +33,7 @@ class NoteSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
+            'thumbnail',
             'url',
             'subject',
             'category',
@@ -55,11 +67,18 @@ class NoteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Create a note"""
         tags = validated_data.pop('tags', [])
+        thumbnail = validated_data.get('thumbnail')
+        if thumbnail:
+            try:
+                validated_data['thumbnail'] = ImageResize(thumbnail, size=(1000, 1000))
+            except Exception as e:
+                print('thumbnail resize error', e)
+                raise serializers.ValidationError({'error': str(e)})
        # Calculating size of the uploaded file
         pdf_file = validated_data.get('url')
         if pdf_file:
-          size_bytes = pdf_file.size/(1024*1024)
-          validated_data['file_size'] = size_bytes
+            size_bytes = pdf_file.size/(1024*1024)
+            validated_data['file_size'] = size_bytes
         note = Note.objects.create(**validated_data)
         self._get_or_create_tags(tags, note)
         return note
@@ -79,7 +98,8 @@ class NoteSerializer(serializers.ModelSerializer):
 
     def get_avg_rating(self, obj):
         # Calculate avg rating for a note using Django aggregation and get the result in a dictionary with key as rating__avg
-        avg_rating = Comment.objects.filter(note=obj).aggregate(Avg('rating'))['rating__avg']
+        avg_rating = Comment.objects.filter(
+            note=obj).aggregate(Avg('rating'))['rating__avg']
         # Return 0 if there are no comments
         return round(avg_rating, 2) if avg_rating is not None else 0.0
 

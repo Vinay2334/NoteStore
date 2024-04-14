@@ -16,11 +16,12 @@ class NoteCategory(Enum):
   EXAM_PAPERS = 'exam_papers'
 
 
-class SubjectCategory(Enum):
-  APPLIED_MATHEMATICS = 'Applied Mathematics'
-  APPLIED_PHYSICS = 'Applied Physics'
-  APPLIED_BIOLOGY = 'Applied Biology'
+class Subject(models.Model):
+  """Subject Model"""
+  sub_name = models.CharField(max_length=255)
 
+  def __str__(self):
+    return self.sub_name
 
 class Note(models.Model):
   """Note Model"""
@@ -30,14 +31,18 @@ class Note(models.Model):
   )
   title = models.CharField(max_length=255)
   contributor = models.CharField(max_length=255, blank=True)
+  thumbnail = models.ImageField(
+      upload_to='thumbnails/',
+      null=True,
+      validators=[
+          FileExtensionValidator(allowed_extensions=ALLOWED_IMAGE_EXTENSIONS)
+      ])
   url = models.FileField(
       upload_to='pdf/',
       validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
       null=True)
-  subject = models.CharField(max_length=200,
-                             choices=[(tag.name, tag.value)
-                                      for tag in SubjectCategory])
   file_size = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+  subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
   category = category = models.CharField(max_length=20,
                                          choices=[(tag.name, tag.value)
                                                   for tag in NoteCategory])
@@ -198,5 +203,6 @@ def delete_image_on_change(sender, instance, using, **kwargs):
 def delete_note_on_delete(sender, instance, using, **kwargs):
   try:
     instance.url.delete(save=False)
+    instance.thumbnail.delete(save=False)
   except Exception as e:
     logging.error(f'delete_note_on_delete error: {e}')

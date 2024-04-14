@@ -9,9 +9,10 @@ type Props = {
 function ComponentGrid({}: Props) {
   return (
     <Box>
-      <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 20 }}>
+      {/* <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 20 }}> */}
+      <Grid container rowSpacing={4} columnSpacing={{xs: 1, sm: 2, md:1}}>
         {subjectData.Subject1.map((_,index) => (
-          <Grid key={index} xs={3}>
+          <Grid key={index} xs={2.4}>
           <ProductCard/>
           </Grid>
         ))}

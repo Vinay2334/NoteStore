@@ -2,14 +2,20 @@ from rest_framework import viewsets, status, generics, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter, OpenApiTypes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django.db import transaction
 
-from user.models import Note, Tag
+from user.models import Note, Tag, Subject
 from notes import serializers
 from notes.permissions import IsOwner
+
+class ManageSubjects(viewsets.ModelViewSet):
+  authentication_classes = [TokenAuthentication]
+  permission_classes = [IsAdminUser]
+  serializer_class = serializers.SubjectSerializer
+  queryset = Subject.objects.all()
 
 
 @extend_schema_view(get=extend_schema(parameters=[
@@ -45,8 +51,12 @@ class ListAllNotes(generics.ListAPIView):
     return response
 
   def _params_to_list(self, qs):
-    """Convert list of strings to Integer"""
+    """Convert string to list"""
     return qs.split(',')
+
+  def _params_to_int(self, qs):
+    """Convert strings to list of int"""
+    return [int(num) for num in qs.split(',')]
 
   def get_queryset(self):
     title = self.request.query_params.get('title')
@@ -57,8 +67,8 @@ class ListAllNotes(generics.ListAPIView):
     if title:
       queryset = queryset.filter(title__icontains=title)
     if subject:
-      subject_names = self._params_to_list(subject)
-      queryset = queryset.filter(subject__in=subject_names)
+      subject_ids = self._params_to_int(subject)
+      queryset = queryset.filter(subject__in=subject_ids)
     if category:
       category_names = self._params_to_list(category)
       queryset = queryset.filter(category__in=category_names)

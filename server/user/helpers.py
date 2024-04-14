@@ -6,7 +6,7 @@ from io import BytesIO
 from PIL import Image
 import random
 
-ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png', 'webp']
+ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png']
 
 
 def ImageHashPath(instance, filename):

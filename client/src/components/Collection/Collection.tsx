@@ -7,7 +7,7 @@ type Props = {}
 
 function Collection({}: Props) {
   return (
-    <Box mt={5} padding='0 1rem 0 1rem' boxSizing='border-box' overflow='hidden'>
+    <Box mt={5} padding='0 5rem 0 5rem' boxSizing='border-box'>
         <Typography textAlign='center' variant='h3'>Collection</Typography>
         <Stack gap={4}>
             {subjects.map((subject, index) => (
