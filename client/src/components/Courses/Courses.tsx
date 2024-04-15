@@ -1,4 +1,4 @@
-import React from "react";
+import React, {MouseEvent} from "react";
 import { Box, Typography } from "@mui/material";
 import CourseCard from "./CourseCard";
 import Grid from '@mui/material/Unstable_Grid2'
@@ -15,10 +15,10 @@ function Courses({}: Props) {
       <Typography textAlign="center" variant="h3">
         Courses
       </Typography>
-      <Grid container rowSpacing={5} columnSpacing={{ xs: 1, sm: 2, md: 5 }}>
+      <Grid position='relative' container mt={3} rowSpacing={5} columnSpacing={{ xs: 1, sm: 2, md: 5 }}>
         {Array.from(Array(6)).map((_, index) => (
           <Grid xs={4} key={index}>
-            <CourseCard />
+            <CourseCard/>
           </Grid>
         ))}
       </Grid>
