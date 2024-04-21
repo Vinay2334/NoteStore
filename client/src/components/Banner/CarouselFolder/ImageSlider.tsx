@@ -51,7 +51,10 @@ function ImageSlider({ imageUrls }: Props) {
                 mt: "2em",
               }}
             >
-              <Typography variant="h6">Book title {imageIndex + 1}</Typography>
+              <Typography fontSize={{
+                sm: '1rem',
+                md: '1.2rem',
+              }}>Book title {imageIndex + 1}</Typography>
             </Container>
             <Img
               sx={{ translate: `${-100 * imageIndex}%` }}

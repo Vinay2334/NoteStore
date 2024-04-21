@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import theme from "@/theme";
 
 type Props = {};
 
@@ -40,21 +41,27 @@ function ProductCard({}: Props) {
       >
         <Img src="book1.jpeg" alt="" />
       </Box>
-      <Stack marginLeft={3} height="40%" width="100%">
-        <Typography fontSize="1.1rem" fontWeight={700}>
+      <Stack boxSizing='border-box' paddingLeft='2rem' height="40%" width="100%"> 
+        <Typography fontSize={{
+          xs: '1rem',
+          sm: '1.1rem'
+        }} fontWeight={700}>
           New Title
         </Typography>
-        <Typography fontSize={15}>Subject: english</Typography>
+        <Typography fontSize={{
+          xs: '0.9rem',
+          sm: '0.7rem'
+        }}>Subject: english</Typography>
         <Rating
           precision={0.5}
           defaultValue={2.5}
-          sx={{ fontSize: "1.2rem" }}
+          sx={{ fontSize: {xs: '1rem', sm: '1.2rem'} }}
         />
-        <Typography fontSize={15} color="rgb(205,140,87)">
+        <Typography fontSize={{xs:'0.7rem', sm:'1rem'}} color="rgb(205,140,87)">
           Contributor: name
         </Typography>
-        <Typography fontSize={12}>Upload Date: 12 Mar 2020</Typography>
-        <Typography fontSize={12}>Size: 12M</Typography>
+        <Typography fontSize={{xs:'0.7rem', sm:'1rem'}}>Upload Date: 12 Mar 2020</Typography>
+        <Typography fontSize={{xs:'0.7rem', sm:'1rem'}}>Size: 12M</Typography>
       </Stack>
     </Paper>
   );
@@ -63,11 +70,18 @@ function ProductCard({}: Props) {
 const Paper = styled(BasePaper)({
   width: "100%",
   position: "relative",
-  height: "25rem",
+  height: "55vh",
   cursor: "pointer",
+  paddingBottom: '2rem',
   "&:hover": {
     boxShadow: '0 8px 11px rgba(33,33,33,.2)'
-  }
+  },
+
+  [theme.breakpoints.up('xs')]: {
+    borderRadius: '0px',
+    // boxShadow: '5px 0px 5px -5px rgba(0, 0, 0, 0.5), -5px 0px 5px -5px rgba(0, 0, 0, 0.5)',
+    height: '50vh',
+  },
 });
 
 const Img = styled("img")({

@@ -16,7 +16,10 @@ function Carousel({}: Props) {
   return (
     <Box
       width="100%"
-      height="100%"
+      height={{
+        sm: '80%',
+        md: '100%',
+      }}
       display="flex"
       alignItems="center"
       justifyContent="center"

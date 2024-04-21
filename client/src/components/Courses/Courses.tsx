@@ -9,15 +9,20 @@ function Courses({}: Props) {
   return (
     <Box
       mt={5}
-      padding="0 5rem 0 5rem"
+      padding={{
+        md: "0 5rem 0 5rem",
+      }}
       boxSizing="border-box"
     >
-      <Typography textAlign="center" variant="h3">
+      <Typography textAlign="center" fontSize={{
+        xs: '2rem',
+        sm: '3rem',
+      }}>
         Courses
       </Typography>
-      <Grid position='relative' container mt={3} rowSpacing={5} columnSpacing={{ xs: 1, sm: 2, md: 5 }}>
+      <Grid justifyContent='center' container mt={3} rowSpacing={2} columnSpacing={{ xs: 1, sm: 1, md: 5 }}>
         {Array.from(Array(6)).map((_, index) => (
-          <Grid xs={4} key={index}>
+          <Grid position='relative' xs={10} md={4} sm={5}  key={index}>
             <CourseCard/>
           </Grid>
         ))}
