@@ -8,9 +8,9 @@ from django.core.validators import FileExtensionValidator, EmailValidator, MaxVa
 from .helpers import ALLOWED_IMAGE_EXTENSIONS
 from enum import Enum
 import logging
+
+
 """All models here"""
-
-
 class NoteCategory(Enum):
   NOTES = 'notes'
   EXAM_PAPERS = 'exam_papers'

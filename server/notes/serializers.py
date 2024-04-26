@@ -44,6 +44,7 @@ class NoteSerializer(serializers.ModelSerializer):
             'thumbnail',
             'url',
             'subject',
+            'course',
             'category',
             'file_size',
             'contributor',

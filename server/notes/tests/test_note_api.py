@@ -6,7 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from user.models import Note, Tag, Comment, Subject
+from user.models import Note, Tag, Comment, Subject, Course
 
 from notes.serializers import NoteSerializer, TagSerializer
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -22,9 +22,11 @@ def detail_url(tag_id):
 def create_note(user, **params):
     """Create and return a sample note"""
     sub = Subject.objects.create(sub_name='New Subject')
+    course = Course.objects.create(course_name='Course')
     defaults = {
         'title': 'Sample note',
         'subject': sub,
+        'course': course,
         'category': 'notes',
         'contributor': user.name,
     }
@@ -139,9 +141,11 @@ class PrivateNoteApiTest(TestCase):
     def test_create_note_with_new_tags(self):
         """Test creating a note with new tags"""
         sub = Subject.objects.create(sub_name='New Subject')
+        course = Course.objects.create(course_name='Course')
         payload = {
             'title': 'Sample note',
             'subject': sub.pk,
+            'course': course.pk,
             'category': 'NOTES',
             'tags': [{'name': 'Gg'}, {'name': 'Mid term'}]
         }
@@ -167,9 +171,11 @@ class PrivateNoteApiTest(TestCase):
         # Construct the full path to the existing PDF file
         pdf_path = os.path.join(current_directory, 'testfile.pdf')
         sub = Subject.objects.create(sub_name='New Subject')
+        course = Course.objects.create(course_name='Course')
         payload = {
             'title': 'Sample note',
             'subject': sub.pk,
+            'course': course.pk,
             'category': 'NOTES',
             'tags': [{'name': 'new tag'}, {'name': 'Mid break'}]
         }

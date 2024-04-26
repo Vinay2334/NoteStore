@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from user.models import Comment, Note, Subject
+from user.models import Comment, Note, Subject, Course
 from django.contrib.auth import get_user_model
 
 COMMENT_URL = reverse('comment:manage_comment-list')
@@ -13,9 +13,11 @@ COMMENT_URL = reverse('comment:manage_comment-list')
 def create_note(user, **params):
     """Create and return a sample note"""
     sub = Subject.objects.create(sub_name='subject')
+    course = Course.objects.create(course_name='Course')
     defaults = {
         'title': 'Sample note',
         'subject': sub,
+        'course': course,
         'category': 'notes',
         'contributor': user.name,
     }
