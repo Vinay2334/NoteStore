@@ -57,11 +57,11 @@ function ProductCard({}: Props) {
           defaultValue={2.5}
           sx={{ fontSize: {xs: '1rem', sm: '1.2rem'} }}
         />
-        <Typography fontSize={{xs:'0.7rem', sm:'1rem'}} color="rgb(205,140,87)">
+        <Typography fontSize={{xs:'0.7rem', sm:'0.9rem'}} color="rgb(205,140,87)">
           Contributor: name
         </Typography>
-        <Typography fontSize={{xs:'0.7rem', sm:'1rem'}}>Upload Date: 12 Mar 2020</Typography>
-        <Typography fontSize={{xs:'0.7rem', sm:'1rem'}}>Size: 12M</Typography>
+        <Typography fontSize={{xs:'0.7rem', sm:'0.9rem'}}>Upload Date: 12 Mar 2020</Typography>
+        <Typography fontSize='0.7rem'>Size: 12M</Typography>
       </Stack>
     </Paper>
   );

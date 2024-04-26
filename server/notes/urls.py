@@ -4,6 +4,7 @@ from notes import views
 
 router = DefaultRouter()
 router.register('subjects', views.ManageSubjects, basename='manage_subjects')
+router.register('courses', views.ManageCourses, basename='manage_course')
 router.register('manage_notes', views.UserLimitedNotes, basename='manage_notes')
 router.register('bookmarks', views.Bookmarks, basename='bookmark')
 router.register('tags', views.TagViewSet)

@@ -1,5 +1,5 @@
 'use client'
-import CourseCard from "@/components/Courses/CourseCard";
+import CourseCard from "@/components/Subjects/SubjectCards";
 import ProductCard from "@/components/ProductCard/ProductCard";
 import { Box } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'

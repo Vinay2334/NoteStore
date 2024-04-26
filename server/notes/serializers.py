@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from comments.serializers import CommentSerializer
 from user.helpers import ImageResize
-from user.models import Note, Comment, Tag, Subject
+from user.models import Course, Note, Comment, Tag, Subject
 from django.db.models import Avg
 
 
@@ -20,6 +20,14 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = ['id', 'sub_name']
+        read_only_fields = ['id']
+
+class CourseSerializer(serializers.ModelSerializer):
+    """Serializer for Subjects"""
+
+    class Meta:
+        model = Course
+        fields = ['id', 'course_name']
         read_only_fields = ['id']
 
 

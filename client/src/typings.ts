@@ -18,3 +18,8 @@ export interface userInterface {
   profile_pic?: string | null;
   error: any;
 }
+
+export interface subjectInterface {
+  id: number;
+  sub_name: string;
+}

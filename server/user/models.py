@@ -22,6 +22,13 @@ class Subject(models.Model):
 
   def __str__(self):
     return self.sub_name
+  
+class Course(models.Model):
+  """Course Model"""
+  course_name = models.CharField(max_length=255)
+
+  def __str__(self):
+    return self.course_name
 
 class Note(models.Model):
   """Note Model"""
@@ -43,6 +50,7 @@ class Note(models.Model):
       null=True)
   file_size = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
   subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+  course = models.ForeignKey(Course, on_delete=models.CASCADE)
   category = category = models.CharField(max_length=20,
                                          choices=[(tag.name, tag.value)
                                                   for tag in NoteCategory])
