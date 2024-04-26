@@ -7,16 +7,21 @@ from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django.db import transaction
 
-from user.models import Note, Tag, Subject
+from user.models import Note, Tag, Subject, Course
 from notes import serializers
-from notes.permissions import IsOwner
+from notes.permissions import IsOwner, isAdminOrReadOnly
 
 class ManageSubjects(viewsets.ModelViewSet):
   authentication_classes = [TokenAuthentication]
-  permission_classes = [IsAdminUser]
+  permission_classes = [isAdminOrReadOnly]
   serializer_class = serializers.SubjectSerializer
   queryset = Subject.objects.all()
 
+class ManageCourses(viewsets.ModelViewSet):
+  authentication_classes = [TokenAuthentication]
+  permission_classes = [isAdminOrReadOnly]
+  serializer_class = serializers.CourseSerializer
+  queryset = Course.objects.all()
 
 @extend_schema_view(get=extend_schema(parameters=[
     OpenApiParameter('title',
@@ -35,7 +40,7 @@ class ManageSubjects(viewsets.ModelViewSet):
 class ListAllNotes(generics.ListAPIView):
   """List all the notes"""
   serializer_class = serializers.NoteSerializer
-  authentication_classes = [TokenAuthentication]
+  authentication_classes = []
   queryset = Note.objects.all()
   pagination_class = PageNumberPagination
 

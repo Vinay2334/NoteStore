@@ -3,9 +3,11 @@ import { Box, Paper as BasePaper, Typography, styled } from "@mui/material";
 import { transform } from "next/dist/build/swc";
 import React, { MouseEvent } from "react";
 
-type Props = {};
+type Props = {
+  name: string
+};
 
-function CourseCard({}: Props) {
+function SubjectCards({name}: Props) {
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const paper = e.currentTarget as HTMLElement;
@@ -20,7 +22,7 @@ function CourseCard({}: Props) {
       <Typography fontSize={{
         xs: '1rem',
         sm: '1.3rem',
-      }}>Subject Name</Typography>
+      }}>{name}</Typography>
     </Paper>
   );
 }
@@ -70,4 +72,4 @@ const Paper = styled(BasePaper)({
   // }
 });
 
-export default CourseCard;
+export default SubjectCards;

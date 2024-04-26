@@ -12,12 +12,7 @@ type InitialState={
 const initialState = {
   loading: false,
   error: "",
-  user: {
-    email: "",
-    username: "",
-    college_name: null,
-    profile_pic: null,
-  } as userInterface
+  user: {} as userInterface
 } as InitialState;
 
 export const userProfile = createSlice({

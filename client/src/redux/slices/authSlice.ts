@@ -1,6 +1,5 @@
 import { loginUser } from "@/services/operations/userApi";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { setOpenAlert } from "./alertSlice";
+import { createSlice } from "@reduxjs/toolkit";
 import Cookies from 'js-cookie';
 type InitialState = {
   loading: boolean;

@@ -20,6 +20,7 @@ import { apiConnector } from "@/services/apiconnector";
 import { user_endpoints } from "@/services/api";
 import { registerUser } from "@/services/operations/userApi";
 import { registerUserInterface } from "@/typings";
+import errorHandler from "@/utils/errorHandler";
 const { SEND_OTP } = user_endpoints;
 
 type Props = {};
@@ -72,18 +73,12 @@ function SignUpForm({}: Props) {
       setShowOtpForm(true);
     } catch (error: any) {
       console.log("SEND OTP ERROR.........", error);
-      if (error?.response?.data?.error) {
-        dispatch(
-          setOpenAlert({
-            message: `${error.response.data.error}`,
-            severe: "error",
-          })
-        );
-      } else {
-        dispatch(
-          setOpenAlert({ message: "Internal server error", severe: "error" })
-        );
-      }
+      dispatch(
+        setOpenAlert({
+          message: errorHandler(error),
+          severe: "error",
+        })
+      );
     }
     setIsLoading(false);
   };
@@ -110,7 +105,7 @@ function SignUpForm({}: Props) {
         setOpenAlert({
           message: `${error?.response.data.errors[0].detail}`,
           severe: "error",
-        }) 
+        })
       );
     }
   };
