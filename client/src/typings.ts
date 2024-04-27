@@ -23,3 +23,8 @@ export interface subjectInterface {
   id: number;
   sub_name: string;
 }
+
+export interface courseInterface {
+  id: number;
+  course_name: string;
+}

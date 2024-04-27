@@ -35,11 +35,7 @@ function AuthModal() {
       password: "",
     },
   });
-  const { register, handleSubmit, formState, control } = form;
-  const { errors } = formState;
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-  };
+  
   return (
     <div>
       <Modal

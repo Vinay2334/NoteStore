@@ -12,25 +12,25 @@ services:
     networks:
       - database
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "mysql"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "mysql"]
       timeout: 20s
       retries: 10
   server:
     build:
       context: ./server
-      args: 
+      args:
         - DEV=true
     networks:
       - database
+      - web
     depends_on:
       mysql:
-        condition: service_healthy 
+        condition: service_healthy
     ports:
-     - "8000:8000"
+      - "8000:8000"
     volumes:
       - ./server:/server
-    command:
-      sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     environment:
       DB_HOST: mysql
       DB_NAME: notes
@@ -39,8 +39,25 @@ services:
       DB_PORT: 3306
     restart: always
 
+  client:
+    build:
+      context: ./client
+    networks:
+      - web
+    depends_on:
+      - server
+      - mysql
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/client
+    environment:
+      - NEXT_PUBLIC_SERVER=http://127.0.0.1:8000/api/
+
 networks:
   database:
     driver: bridge
+  web:
+    driver: bridge
 volumes:
-    mysql-data:
+  mysql-data:

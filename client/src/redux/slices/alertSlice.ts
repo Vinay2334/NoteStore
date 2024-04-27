@@ -8,7 +8,7 @@ export interface AlertState {
   open: boolean;
   vertical: SnackbarOrigin["vertical"];
   horizontal: SnackbarOrigin["horizontal"];
-  severe: AlertColor | string;
+  severe: AlertColor | undefined;
   title: string;
   message: string;
   duration: number;
@@ -23,7 +23,7 @@ const initialState: AlertState = {
   open: false,
   vertical: "top",
   horizontal: "center",
-  severe: "",
+  severe: undefined,
   title: "",
   message: "",
   duration: 3000,

@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/redux/hooks";
 import { setOpenAlert } from "@/redux/slices/alertSlice";
-import { setSignUpView } from "@/redux/slices/modalSlice";
+import { handleClose, setSignUpView } from "@/redux/slices/modalSlice";
 import { useAppSelector } from "@/redux/store";
 import { getUser, loginUser } from "@/services/operations/userApi";
 import { loginUserInterface } from "@/typings";
@@ -35,6 +35,7 @@ function LoginForm({}: Props) {
       const response = await dispatch(loginUser(data)).unwrap();
       await dispatch(getUser(response.token)).unwrap();
       dispatch(setOpenAlert({message: `Logged in Successfully`, severe:"success"}));
+      dispatch(handleClose());
     } catch (error: any) {
       dispatch(
         setOpenAlert({

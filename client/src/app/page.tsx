@@ -11,6 +11,7 @@ import Banner from "@/components/Banner/Banner";
 import Subjects from "@/components/Subjects/Subjects";
 import { useAppDispatch } from "@/redux/hooks";
 import { getUser } from "@/services/operations/userApi";
+import Courses from "@/components/Courses/Courses";
 
 export default function Home() {
   const {token} = useAppSelector(state => state.authReducer);
@@ -28,6 +29,7 @@ export default function Home() {
     <main>
       <Banner/>
       <Subjects/>
+      <Courses/>
       <Collection/>
     </main>
   );
