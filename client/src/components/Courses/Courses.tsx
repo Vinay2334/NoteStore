@@ -48,7 +48,7 @@ function Courses({}: Props) {
       <Grid justifyContent='center' container mt={3} rowSpacing={2} columnSpacing={{ xs: 1, sm: 1, md: 5 }}>
         {courses.map((item) => (
           <Grid position='relative' xs={10} md={4} sm={5} key={item.id}>
-            <CourseCards name={item.course_name}/>
+            <CourseCards name={item.name}/>
           </Grid>
         ))}
       </Grid>

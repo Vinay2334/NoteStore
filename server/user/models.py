@@ -13,22 +13,23 @@ import logging
 """All models here"""
 class NoteCategory(Enum):
   NOTES = 'notes'
-  EXAM_PAPERS = 'exam_papers'
+  BOOKS = 'books'
+  PYQ = 'pyq'
 
 
 class Subject(models.Model):
   """Subject Model"""
-  sub_name = models.CharField(max_length=255)
+  name = models.CharField(max_length=255)
 
   def __str__(self):
-    return self.sub_name
+    return self.name
   
 class Course(models.Model):
   """Course Model"""
-  course_name = models.CharField(max_length=255)
+  name = models.CharField(max_length=255)
 
   def __str__(self):
-    return self.course_name
+    return self.name
 
 class Note(models.Model):
   """Note Model"""

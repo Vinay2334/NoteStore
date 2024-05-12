@@ -1,42 +1,45 @@
+import { fetchAllDocs, fetchUserDocs } from "@/services/operations/notesApi";
+import { docsInterface } from "@/typings";
 import { createSlice } from "@reduxjs/toolkit";
 
-type ResultState = {
-  id: Number;
-  title: String;
-  url: String;
-  subject: String;
-  category: String;
-  file_size: String;
-  contributor: String;
-  date_created: String;
-  likes_count: Number;
-  avg_rating: Number;
-  tags: Array<Object>;
-};
-
 type InitialState = {
-  count: Number;
-  next: Number;
-  previous: Number;
-  results: Array<ResultState>;
+  loading: Boolean,
+  results: docsInterface | null,
 };
 
 const initialState: InitialState = {
-  count: 0,
-  next: 0,
-  previous: 0,
-  results: [],
+  loading: false,
+  results: null,
 };
 
 export const notes = createSlice({
   name: "notes",
   initialState,
   reducers: {
-    setNotes(state, action) {
-      state.results = action.payload.results;
-    },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchAllDocs.pending, (state, action) => {
+      state.loading = true;
+    })
+    builder.addCase(fetchAllDocs.fulfilled, (state, action) => {
+      state.loading = false;
+      state.results = action.payload;
+    })
+    builder.addCase(fetchAllDocs.rejected, (state, action) => {
+      state.loading = false;
+    })
+    builder.addCase(fetchUserDocs.pending, (state, action) => {
+      state.loading= true;
+    })
+    builder.addCase(fetchUserDocs.fulfilled, (state, action) => {
+      state.loading= false;
+      state.results= action.payload;
+    })
+    builder.addCase(fetchUserDocs.rejected, (state, action) => {
+      state.loading= false;
+    })
+  }
 });
 
-export const { setNotes } = notes.actions;
+export const { } = notes.actions;
 export default notes.reducer;

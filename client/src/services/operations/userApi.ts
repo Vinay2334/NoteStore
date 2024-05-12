@@ -44,7 +44,7 @@ export const loginUser = createAsyncThunk(
 
 export const getUser = createAsyncThunk(
   "getUser",
-  async (token: string, { rejectWithValue }) => {
+  async (token: string|undefined, { rejectWithValue }) => {
     const headers = {
       Authorization: `token ${token}`
     };

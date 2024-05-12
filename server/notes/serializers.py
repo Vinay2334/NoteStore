@@ -19,7 +19,7 @@ class SubjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subject
-        fields = ['id', 'sub_name']
+        fields = ['id', 'name']
         read_only_fields = ['id']
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'course_name']
+        fields = ['id', 'name']
         read_only_fields = ['id']
 
 
@@ -35,6 +35,7 @@ class NoteSerializer(serializers.ModelSerializer):
     """Serializer for notes"""
     tags = TagSerializer(many=True, required=False)
     avg_rating = serializers.SerializerMethodField()
+    # subject = SubjectSerializer()
 
     class Meta:
         model = Note

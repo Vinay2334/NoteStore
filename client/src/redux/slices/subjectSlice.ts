@@ -1,11 +1,11 @@
 import { fetchAllSubjects } from "@/services/operations/notesApi";
-import { subjectInterface } from "@/typings";
+import { itemInterface } from "@/typings";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type initialSubjectState = {
   loading: boolean;
   error: any;
-  subjects: Array<subjectInterface>
+  subjects: Array<itemInterface>
 };
 
 const initialState = {

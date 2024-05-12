@@ -26,16 +26,16 @@ class ModeltTests(TestCase):
     def test_create_subject(self):
         """Test creating subject"""
         subject = models.Subject.objects.create(
-            sub_name='subject'
+            name='subject'
         )
-        self.assertEqual(str(subject), subject.sub_name)
+        self.assertEqual(str(subject), subject.name)
 
     def test_create_course(self):
         """Test creating course"""
         course = models.Course.objects.create(
-            course_name='course'
+            name='course'
         )
-        self.assertEqual(str(course), course.course_name)
+        self.assertEqual(str(course), course.name)
     
     def test_create_note(self):
         """Test creating a note is successfull"""
@@ -45,10 +45,10 @@ class ModeltTests(TestCase):
             'testpass123',
         )
         subject = models.Subject.objects.create(
-            sub_name='subject'
+            name='subject'
         )
         course = models.Course.objects.create(
-            course_name='course'
+            name='course'
         )
         note = models.Note.objects.create(
             user=user,

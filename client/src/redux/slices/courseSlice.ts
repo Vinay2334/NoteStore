@@ -1,11 +1,11 @@
 import { fetchAllCourses } from "@/services/operations/notesApi";
-import { courseInterface } from "@/typings";
+import { itemInterface } from "@/typings";
 import { createSlice } from "@reduxjs/toolkit";
 
 type initialCourseState = {
   loading: boolean;
   error: any;
-  courses: Array<courseInterface>
+  courses: Array<itemInterface>
 };
 
 const initialState = {

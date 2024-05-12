@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import "./globals.css";
 import { ReduxProvider } from "@/redux/provider";
 import AppAlert from "@/components/AppAlert";
+import DataFetcher from "@/components/DataFetcher";
 
 const josefin_sans = Josefin_Sans({ subsets: ["latin"], style:['italic', 'normal'], weight:['400', '700'], variable: "--font-josefin_sans" });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
             {/* <ReduxProvider>{children}</ReduxProvider> */}
             <CssBaseline />
             <ReduxProvider>
+              <DataFetcher/>
               <Navbar />
               {children}
             </ReduxProvider>

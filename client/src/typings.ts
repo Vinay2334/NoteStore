@@ -19,12 +19,31 @@ export interface userInterface {
   error: any;
 }
 
-export interface subjectInterface {
+export interface itemInterface {
   id: number;
-  sub_name: string;
+  name: string;
 }
 
-export interface courseInterface {
-  id: number;
-  course_name: string;
+export interface docsItemInterface {
+  id: Number;
+  title: String;
+  url: String;
+  thumbnail: String;
+  subject: {
+    id: number;
+    sub_name: string;
+  };
+  category: String;
+  file_size: String;
+  contributor: String;
+  date_created: string;
+  likes_count: Number;
+  avg_rating: number;
+  tags: Array<Object>;
+};
+export interface docsInterface{
+  count: Number;
+  next: Number;
+  previous: Number;
+  results: Array<docsItemInterface>;
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dropdown,
   MenuButton as BaseMenuButton,
@@ -15,12 +15,25 @@ import { useAppDispatch } from "@/redux/hooks";
 import { handleOpen } from "@/redux/slices/modalSlice";
 import fetchProfilePic from "@/utils/fetchProfilePic";
 import Cookies from "js-cookie";
+import Link from "next/link";
+import { getUser } from "@/services/operations/userApi";
+import zIndex from "@mui/material/styles/zIndex";
 type Props = {};
 
 function AvatarNav({}: Props) {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.userProfileReducer);
+  const token = Cookies.get('auth_token');
+
+  useEffect(() => {
+    const fetchUser = async() => {
+      await dispatch(getUser(token));
+    }
+    if(token){
+      fetchUser();
+    }
+  }, [dispatch])
 
   return (
     <Dropdown>
@@ -36,15 +49,15 @@ function AvatarNav({}: Props) {
           <Avatar sx={{ padding: "0" }} src="/DefaultProfile.png" />
         )}
       </MenuButton>
-      <Menu slots={{ listbox: Listbox }}>
+      <Menu style={{zIndex: '9999'}} slots={{ listbox: Listbox }}>
         {user.email ? (
           <>
             <MenuItem>Profile</MenuItem>
-            <MenuItem>Language settings</MenuItem>
+            <MenuItem><Link style={{textDecoration:'None', color:'inherit'}} href='/uploads'>Your Uploads</Link></MenuItem>
             <MenuItem
               onClick={() => {
                 Cookies.remove("auth_token");
-                window.location.reload();
+                window.location.href = '/';
               }}
             >
               Log out

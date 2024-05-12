@@ -12,8 +12,8 @@ COMMENT_URL = reverse('comment:manage_comment-list')
 
 def create_note(user, **params):
     """Create and return a sample note"""
-    sub = Subject.objects.create(sub_name='subject')
-    course = Course.objects.create(course_name='Course')
+    sub = Subject.objects.create(name='subject')
+    course = Course.objects.create(name='Course')
     defaults = {
         'title': 'Sample note',
         'subject': sub,
