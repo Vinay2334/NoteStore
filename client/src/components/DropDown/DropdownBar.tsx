@@ -15,6 +15,7 @@ function DropdownBar({items, label}: Props) {
 
   const handleChange = (event: SelectChangeEvent) => {
     setValue(event.target.value);
+    console.log(value);
   };
   return (
     <FormControl required sx={{ m: 1, minWidth: 120, flexGrow:3 }} size="small">
