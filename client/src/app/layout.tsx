@@ -28,7 +28,6 @@ export default function RootLayout({
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           {" "}
           <ThemeProvider theme={theme}>
-            {/* <ReduxProvider>{children}</ReduxProvider> */}
             <CssBaseline />
             <ReduxProvider>
               <DataFetcher/>

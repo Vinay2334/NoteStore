@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
 import Image from "next/image";
 import ImageIcon from "@mui/icons-material/Image";
 import UploadIcon from '@mui/icons-material/Upload';
@@ -18,34 +19,39 @@ import UploadIcon from '@mui/icons-material/Upload';
 type Props = {};
 
 function page({}: Props) {
-  const [profilePicPreview, setProfilePicPreview] = useState<
-    string | undefined
-  >(undefined);
-  const [file, setFile] = useState<File>();
-  const dispatch = useAppDispatch();
-  const { loading, subjects } = useAppSelector(
-    (state) => state.subjectsReducer
-  );
-  const { courses } = useAppSelector((state) => state.coursesReducer);
-  const handleProfilePicSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      // Set the file to the form state
-      // setValue("profile_pic", file);
-      // Create temporary URL for the image and store it in component state for preview
-      const imageUrl = URL.createObjectURL(file);
-      setProfilePicPreview(imageUrl);
-    }
-  };
   const form = useForm({
     defaultValues: {
       title: "",
       subject: 0,
       course: 0,
       category: "",
+      url: "",
+      thumbnail: {},
       tags: [],
     },
   });
+  const { register, handleSubmit, formState, watch, resetField, setValue, control } = form;
+  const [thumbnailPreview, setThumbnailPreview] = useState<
+    string | undefined
+  >(undefined);
+  const dispatch = useAppDispatch();
+  const { loading, subjects } = useAppSelector(
+    (state) => state.subjectsReducer
+  );
+  const { courses } = useAppSelector((state) => state.coursesReducer);
+  const handleThumbnailSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      // Set the file to the form state
+      // setValue("profile_pic", file);
+      // Create temporary URL for the image and store it in component state for preview
+      const imageUrl = URL.createObjectURL(file);
+      setThumbnailPreview(imageUrl);
+      console.log('Fie', file);
+      setValue('thumbnail', file)
+    }
+  };
+  console.log(form);
 
   return (
     <React.Fragment>
@@ -65,6 +71,9 @@ function page({}: Props) {
                   placeholder="Enter Title"
                   type="text"
                   required
+                  {...register("title", {
+                    required: "title is required",
+                  })}
                 />
               </Box>
               <Box display="flex" alignItems="center">
@@ -81,12 +90,14 @@ function page({}: Props) {
                   style={{ flexGrow: "2", border: "1px solid black" }}
                   type="file"
                   accept=".pdf"
-                  onChange={(e) => e.target.files && setFile(e.target.files[0])}
+                  {...register("url", {
+                    required: "File is required",
+                  })}
                 />
               </Box>
               <Box display="flex" alignItems="center" flexDirection="column">
                 <label
-                  htmlFor="profile_picture_input"
+                  htmlFor="thumbnail_input"
                   style={{
                     cursor: "pointer",
                     width: "100%",
@@ -99,20 +110,20 @@ function page({}: Props) {
                 </label>
                 <input
                   type="file"
-                  id="profile_picture_input"
-                  name="profile_picture"
+                  id="thumbnail_input"
+                  // name="thumbnail"
                   accept="image/*"
                   style={{ display: "none" }}
-                  onChange={handleProfilePicSubmit}
+                  onChange={handleThumbnailSubmit}
                 />
-                {profilePicPreview && (
+                {thumbnailPreview && (
                   <Image
                     width={200}
                     height={200}
-                    alt="Profile Pic"
-                    src={profilePicPreview}
+                    alt="Thumbnail"
+                    src={thumbnailPreview}
                     style={{ cursor: "not-allowed" }}
-                    onClick={() => setProfilePicPreview(undefined)}
+                    onClick={() => resetField('thumbnail')}
                   />
                 )}
               </Box>
@@ -127,6 +138,7 @@ function page({}: Props) {
               </Button>
             </Stack>
           </form>
+          <DevTool control={control}/>
         </Box>
       </Box>
     </React.Fragment>
