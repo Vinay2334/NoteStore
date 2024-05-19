@@ -35,6 +35,7 @@ class NoteSerializer(serializers.ModelSerializer):
     """Serializer for notes"""
     tags = TagSerializer(many=True, required=False)
     avg_rating = serializers.SerializerMethodField()
+    pro_url = serializers.FileField(required=False)
     # subject = SubjectSerializer()
 
     class Meta:
@@ -44,6 +45,8 @@ class NoteSerializer(serializers.ModelSerializer):
             'title',
             'thumbnail',
             'url',
+            'file_url',
+            'pro_url',
             'subject',
             'course',
             'category',
@@ -76,6 +79,7 @@ class NoteSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a note"""
+        validated_data.pop('pro_url')
         tags = validated_data.pop('tags', [])
         thumbnail = validated_data.get('thumbnail')
         if thumbnail:

@@ -1,15 +1,15 @@
-import { fetchAllDocs, fetchUserDocs } from "@/services/operations/notesApi";
+import { fetchAllDocs, fetchUserDocs, uploadDocs } from "@/services/operations/notesApi";
 import { docsInterface } from "@/typings";
 import { createSlice } from "@reduxjs/toolkit";
 
 type InitialState = {
-  loading: Boolean,
-  results: docsInterface | null,
+  loading: boolean,
+  docData: docsInterface | null,
 };
 
 const initialState: InitialState = {
   loading: false,
-  results: null,
+  docData: null,
 };
 
 export const notes = createSlice({
@@ -23,7 +23,7 @@ export const notes = createSlice({
     })
     builder.addCase(fetchAllDocs.fulfilled, (state, action) => {
       state.loading = false;
-      state.results = action.payload;
+      state.docData = action.payload;
     })
     builder.addCase(fetchAllDocs.rejected, (state, action) => {
       state.loading = false;
@@ -33,9 +33,18 @@ export const notes = createSlice({
     })
     builder.addCase(fetchUserDocs.fulfilled, (state, action) => {
       state.loading= false;
-      state.results= action.payload;
+      state.docData= action.payload;
     })
     builder.addCase(fetchUserDocs.rejected, (state, action) => {
+      state.loading= false;
+    })
+    builder.addCase(uploadDocs.pending, (state, action) => {
+      state.loading= true;
+    })
+    builder.addCase(uploadDocs.fulfilled, (state, action) => {
+      state.loading= false;
+    })
+    builder.addCase(uploadDocs.rejected, (state, action) => {
       state.loading= false;
     })
   }

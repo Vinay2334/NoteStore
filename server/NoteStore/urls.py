@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/note/', include('notes.urls')),
     path('api/comment/', include('comments.urls')),
     path('auth/', include('rest_framework_social_oauth2.urls', namespace='rest_framework_social_oauth2')),
+    path('api/progressupload/', include('upload.urls')),
 ]

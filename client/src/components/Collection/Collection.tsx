@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Stack, Typography } from "@mui/material";
-import { subjects } from "@/components/componentData";
 import ComponentGrid from "./ComponentGrid";
 
 type Props = {};

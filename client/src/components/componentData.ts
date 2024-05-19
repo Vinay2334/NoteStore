@@ -1,6 +1,23 @@
+import { itemInterface } from "@/typings"
+
 export const nav_data: Array<string> = [
     "Home",
     "Collection",
+]
+
+export const categories: Array<itemInterface> = [
+    {
+        'id': 1,
+        'name':'NOTES',
+    },
+    {
+        'id': 2,
+        'name':'PYQ',
+    },
+    {
+        'id': 3,
+        'name':'BOOKS',
+    },
 ]
 
 export const subjectData = {

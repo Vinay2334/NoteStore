@@ -38,6 +38,9 @@ X_FRAME_OPTIONS = '*'
 # Application definition
 
 INSTALLED_APPS = [
+
+    'daphne',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     'user',
     'notes',
     'comments',
+    'upload',
 
     # Installed apps
     'rest_framework',
@@ -61,6 +65,7 @@ INSTALLED_APPS = [
     'rest_framework_social_oauth2',
     'corsheaders',
     "drf_standardized_errors",
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -101,7 +106,16 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'NoteStore.wsgi.application'
+# WSGI_APPLICATION = 'NoteStore.wsgi.application'
+ASGI_APPLICATION = 'NoteStore.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

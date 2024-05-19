@@ -20,7 +20,7 @@ type Props = {};
 
 function LoginForm({}: Props) {
   const { view } = useAppSelector((state) => state.modalReducer);
-  const {loading} = useAppSelector((state) => state.authReducer);
+  const { loading } = useAppSelector((state) => state.authReducer);
   const dispatch = useAppDispatch();
   const form = useForm<loginUserInterface>({
     defaultValues: {
@@ -30,20 +30,9 @@ function LoginForm({}: Props) {
   });
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
-  const onSubmit = async(data: loginUserInterface) => {
-    try {
-      const response = await dispatch(loginUser(data)).unwrap();
-      await dispatch(getUser(response.token)).unwrap();
-      dispatch(setOpenAlert({message: `Logged in Successfully`, severe:"success"}));
-      dispatch(handleClose());
-    } catch (error: any) {
-      dispatch(
-        setOpenAlert({
-          message: `${errorHandler(error.errors)}`,
-          severe: "error",
-        })
-      );
-    }
+  const onSubmit = async (data: loginUserInterface) => {
+    const response = await dispatch(loginUser(data)).unwrap();
+    await dispatch(getUser(response.token));
   };
   const switchToSignUp = () => {
     dispatch(setSignUpView());
@@ -94,7 +83,7 @@ function LoginForm({}: Props) {
             type="submit"
             variant="contained"
             color="primary"
-            disabled = {loading}
+            disabled={loading}
           >
             Login
           </Button>

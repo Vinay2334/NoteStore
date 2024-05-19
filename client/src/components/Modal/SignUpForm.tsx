@@ -75,7 +75,7 @@ function SignUpForm({}: Props) {
       console.log("SEND OTP ERROR.........", error);
       dispatch(
         setOpenAlert({
-          message: errorHandler(error),
+          message: errorHandler(error.data),
           severe: "error",
         })
       );
@@ -103,7 +103,7 @@ function SignUpForm({}: Props) {
       console.log("Sign in submit error", error);
       dispatch(
         setOpenAlert({
-          message: `${error?.response.data.errors[0].detail}`,
+          message: `${errorHandler(error.errors)}`,
           severe: "error",
         })
       );

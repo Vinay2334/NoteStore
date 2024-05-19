@@ -12,5 +12,5 @@ export const notes_endpoints = {
     GET_ALL_NOTES_API: BASE_URL+"note/all",
     GET_ALL_SUBJECTS_API: BASE_URL+"note/subjects",
     GET_ALL_COURSES_API: BASE_URL+"note/courses",
-    GET_ALL_USER_DOCS_API: BASE_URL+"note/manage_notes",
+    MANAGE_DOCS_API: BASE_URL+"note/manage_notes/",
 }

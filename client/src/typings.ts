@@ -40,10 +40,20 @@ export interface docsItemInterface {
   likes_count: Number;
   avg_rating: number;
   tags: Array<Object>;
-};
-export interface docsInterface{
+}
+export interface docsInterface {
   count: Number;
   next: Number;
   previous: Number;
   results: Array<docsItemInterface>;
+}
+
+export interface uploadFormInterface {
+  title: string;
+  subject: number;
+  course: number;
+  category: string;
+  url: string|Blob;
+  thumbnail: string|Blob;
+  tags: never[];
 }

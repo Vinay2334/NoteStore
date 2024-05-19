@@ -49,6 +49,7 @@ class Note(models.Model):
       upload_to='pdf/',
       validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
       null=True)
+  file_url = models.CharField(default='', null=True, blank=True, max_length=255)
   file_size = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
   subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
   course = models.ForeignKey(Course, on_delete=models.CASCADE)
