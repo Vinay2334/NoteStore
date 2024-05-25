@@ -8,8 +8,6 @@ from django.urls import path
 from upload.routing import websocket_urlpatterns
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
-from django.urls import re_path
-from upload import consumers
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 

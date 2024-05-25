@@ -53,7 +53,13 @@ export interface uploadFormInterface {
   subject: number;
   course: number;
   category: string;
-  url: string|Blob;
+  upload_file: string|Blob;
   thumbnail: string|Blob;
   tags: never[];
+}
+
+export interface progressDataInterface {
+  progress: number;
+  uploaded: number;
+  total_size: number;
 }

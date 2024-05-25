@@ -8,8 +8,7 @@ import {
 } from "@/typings";
 import errorHandler from "@/utils/errorHandler";
 import { Action, createAsyncThunk, Dispatch } from "@reduxjs/toolkit";
-import { AxiosProgressEvent } from "axios";
-import { SetStateAction } from "react";
+import io from "socket.io-client";
 const {
   GET_ALL_NOTES_API,
   GET_ALL_SUBJECTS_API,
@@ -91,32 +90,33 @@ export const fetchUserDocs = createAsyncThunk(
 export const uploadDocs = createAsyncThunk(
   "uploadDocs",
   async (
-    args: { data: FormData; token: string | undefined; setProgress: any },
+    args: { data: FormData; token: string | undefined; setProgressData: any },
     { rejectWithValue, dispatch }
   ) => {
     console.log("upload");
-    const { data, token, setProgress } = args;
+    const { data, token, setProgressData } = args;
     const headers = {
       Authorization: `token ${token}`,
     };
     try {
+      const socket = new WebSocket(
+        `ws://${process.env.NEXT_PUBLIC_SERVER_NAME}/ws/upload_progress/?token=${token}`
+      );
+
+      socket.onopen = () => {
+        console.log("WebSocket connection established");
+      };
+      // Event handler for receiving messages
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data)
+        setProgressData({progress: data.percentage, uploaded: data.uploaded, total_size: data.totalSize});
+      };
       const response = await apiConnector(
         "POST",
         MANAGE_DOCS_API,
         data,
-        headers,
-        undefined,
-        {
-          onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.floor(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setProgress(percentCompleted);
-              console.log(`Upload Progress: ${percentCompleted}%`);
-            }
-          },
-        }
+        headers
       );
       dispatch(
         setOpenAlert({

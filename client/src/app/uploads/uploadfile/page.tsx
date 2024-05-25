@@ -17,24 +17,29 @@ import { DevTool } from "@hookform/devtools";
 import Image from "next/image";
 import ImageIcon from "@mui/icons-material/Image";
 import UploadIcon from "@mui/icons-material/Upload";
-import { uploadFormInterface } from "@/typings";
+import { progressDataInterface, uploadFormInterface } from "@/typings";
 import { uploadDocs } from "@/services/operations/notesApi";
 import { useRouter } from "next/navigation";
 import { categories } from "@/components/componentData";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
+import {styled} from "@mui/material/styles";
 
 type Props = {};
 
 function page({}: Props) {
   const router = useRouter();
-  const [progress, setProgress] = useState(0);
+  const [progressData, setProgressData] = useState<progressDataInterface> ({
+    progress:0,
+    uploaded:0,
+    total_size:0
+  });
   const form = useForm({
     defaultValues: {
       title: "",
       subject: 0,
       course: 0,
       category: "NOTES",
-      url: "",
+      upload_file: "",
       thumbnail: "",
       tags: [],
     } as uploadFormInterface,
@@ -71,7 +76,7 @@ function page({}: Props) {
   const handleFileSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      setValue("url", file);
+      setValue("upload_file", file);
     }
   };
   const onSubmit = async (data: uploadFormInterface) => {
@@ -80,10 +85,10 @@ function page({}: Props) {
     formData.append("subject", data.subject.toString());
     formData.append("course", data.course.toString());
     formData.append("category", data.category);
-    formData.append("url", data.url);
+    formData.append("upload_file", data.upload_file);
     formData.append("thumbnail", data.thumbnail);
 
-    await dispatch(uploadDocs({ data: formData, token, setProgress }));
+    await dispatch(uploadDocs({ data: formData, token, setProgressData }));
     router.push("/uploads");
   };
   console.log(watch());
@@ -174,12 +179,12 @@ function page({}: Props) {
                   onChange={handleThumbnailSubmit}
                 />
                 {thumbnailPreview && (
-                  <Image
+                  <StyledImage
                     width={200}
                     height={200}
                     alt="Thumbnail"
                     src={thumbnailPreview}
-                    style={{ cursor: "not-allowed" }}
+                    // style={{ cursor: "not-allowed" }}
                     onClick={resetThumbnailState}
                   />
                 )}
@@ -194,8 +199,7 @@ function page({}: Props) {
                 <UploadIcon />
                 Upload
               </Button>
-              {progress > 0 && <ProgressBar value={progress} />}
-              <ProgressBar value={progress} />
+              {progressData.progress > 0 && <ProgressBar value={progressData.progress} progressData={progressData} />}
             </Stack>
           </form>
           <DevTool control={control} />
@@ -204,5 +208,12 @@ function page({}: Props) {
     </React.Fragment>
   );
 }
+
+const StyledImage = styled(Image)({
+  cursor:"not-allowed",
+  "&:hover":{
+    filter:"grayscale(100%)"
+  }
+})
 
 export default page;

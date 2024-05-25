@@ -1,11 +1,5 @@
-# import os
-# import sys
-# import threading
-
 import boto3
 from botocore.client import Config
-# from channels.layers import get_channel_layer
-# from asgiref.sync import async_to_sync
 
 import os
 import sys
@@ -27,12 +21,14 @@ class ProgressPercentage(object):
             self._seen_so_far += bytes_amount
             percentage = (self._seen_so_far / self._size) * 100
             channel_layer = get_channel_layer()
+            print(self._user_channel)
             async_to_sync(channel_layer.group_send)(
                 self._user_channel,
                 {
-                    "type": "send_progress",
+                    "type": f"send_progress",
                     "content": {
-                        "filename": self._filename,
+                        "uploaded": self._seen_so_far,
+                        "totalSize": self._size,
                         "percentage": percentage,
                     }
                 }
@@ -54,27 +50,3 @@ def upload_to_s3_with_progress(file, bucket_name, object_name, user_channel):
     )
 
     return f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
-
-
-
-# def upload_to_s3_with_progress(file, bucket_name, object_name, user_channel):
-#     s3 = boto3.client('s3', config=Config(s3={'addressing_style': 'path'}))
-
-#     def progress_callback(bytes_transferred):
-#         channel_layer = get_channel_layer()
-#         async_to_sync(channel_layer.group_send)(
-#             user_channel, 
-#             {
-#                 'type': 'send_progress',
-#                 'content': {'progress': bytes_transferred}
-#             }
-#         )
-
-#     s3.upload_fileobj(
-#         file,
-#         bucket_name,
-#         object_name,
-#         Callback=ProgressPercentage
-#     )
-
-#     return f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
