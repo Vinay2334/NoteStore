@@ -3,7 +3,7 @@ LABEL maintainer="Note"
 
 ENV PYTHONUNBUFFERED 1 
 
-COPY ./requirements.txt /tmp/requirements.txt
+COPY ./linuxrequirements.txt /tmp/requirements.txt
 COPY ./ /server
 WORKDIR /server
 EXPOSE 8000
