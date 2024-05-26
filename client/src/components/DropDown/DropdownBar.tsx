@@ -11,7 +11,7 @@ type Props = {
   items: Array<itemInterface>;
   label: string;
   setValue: UseFormSetValue<uploadFormInterface>;
-  fieldName: string;
+  fieldName: any;
 };
 
 function DropdownBar({ items, label, setValue, fieldName }: Props) {

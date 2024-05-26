@@ -45,7 +45,7 @@ export const loginUser = createAsyncThunk(
 
 export const getUser = createAsyncThunk(
   "getUser",
-  async (token: string | undefined, { rejectWithValue, dispatch }) => {
+  async (token: string | undefined, { dispatch }) => {
     const headers = {
       Authorization: `token ${token}`,
     };
@@ -58,6 +58,7 @@ export const getUser = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       console.log("GET USER API ERROR.............", error);
+      Cookies.remove("auth_token")
       dispatch(
         setOpenAlert({
           message: `${errorHandler(error.response.data)}`,

@@ -118,6 +118,7 @@ export const uploadDocs = createAsyncThunk(
         data,
         headers
       );
+      socket.close()
       dispatch(
         setOpenAlert({
           message: `Doc Uploaded successfully`,
