@@ -8,7 +8,7 @@ import {
 } from "@/typings";
 import errorHandler from "@/utils/errorHandler";
 import { Action, createAsyncThunk, Dispatch } from "@reduxjs/toolkit";
-import io from "socket.io-client";
+
 const {
   GET_ALL_NOTES_API,
   GET_ALL_SUBJECTS_API,

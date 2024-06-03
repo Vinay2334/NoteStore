@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { categories } from "@/components/componentData";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import {styled} from "@mui/material/styles";
+import authRoutes from "@/components/authRoutes";
 
 type Props = {};
 

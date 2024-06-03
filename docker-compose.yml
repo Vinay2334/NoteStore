@@ -72,8 +72,10 @@ services:
       - "3000:3000"
     volumes:
       - ./client:/client
+    command: sh -c "npm run dev"
     environment:
-      - NEXT_PUBLIC_SERVER=http://127.0.0.1:8000/api/
+      NEXT_PUBLIC_SERVER: http://127.0.0.1:8000/api/
+      NEXT_PUBLIC_SERVER_NAME: 127.0.0.1:8000
 
 networks:
   database:
