@@ -11,6 +11,7 @@ import React, { useEffect } from "react";
 import Cookies from "js-cookie";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useRouter } from "next/navigation";
+import authRoutes from "@/components/authRoutes";
 
 type Props = {};
 
@@ -52,7 +53,7 @@ function Uploads({}: Props) {
           container
           rowSpacing={{ xs: "0", sm: "2rem" }}
           columnSpacing={{ xs: 0, sm: 2, md: 1 }}
-        >
+        > 
           {docData?.results?.map((result, index) => (
             <Grid key={index} xs={6} sm={4} md={2.4}>
               <ProductCard doc={result} />
@@ -64,4 +65,4 @@ function Uploads({}: Props) {
   );
 }
 
-export default Uploads;
+export default authRoutes(Uploads);

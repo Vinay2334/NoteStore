@@ -26,18 +26,23 @@ function PdfViewer() {
     setPageNumber((prevPage) => Math.min(prevPage + 1, numPages || prevPage));
 
   return (
+    <Box display="flex" justifyContent="center" boxSizing="border-box" padding={3}>
     <Box
       position="relative"
-      width="fit-content"
+      minWidth={400}
       onMouseEnter={() => setShowPageNumber(true)}
       onMouseLeave={() => setShowPageNumber(false)}
-      maxHeight={600}
+      height={500}
+      borderColor="black"
+      border="10px solid"
+      boxSizing="border-box"
+      overflow="hidden"
     >
       {/* <Paper> */}
       <Document file="/samplepdf.pdf" onLoadSuccess={onDocumentLoadSuccess}>
         <Page
           width={400}
-          height={500}
+          height={400}
           renderAnnotationLayer={false}
           renderTextLayer={false}
           pageNumber={pageNumber}
@@ -78,6 +83,7 @@ function PdfViewer() {
           />
         </Stack>
       )}
+    </Box>
     </Box>
   );
 }

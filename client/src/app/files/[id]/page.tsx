@@ -3,7 +3,7 @@ import { Box, Container, Rating, Stack, Typography } from "@mui/material";
 import React from "react";
 import Avatar from '@mui/material/Avatar';
 import PdfViewer from "@/components/PdfViewer/PdfViewer";
-import Sample from "@/components/PdfViewer/Sample";
+import ProductList from "@/components/ProductList/ProductList";
 
 type Props = {};
 
@@ -11,10 +11,10 @@ function page({}: Props) {
   return (
     <Stack>
       <Box display="flex">
-        <Box>
-          <Stack gap={2}>
-            <Typography variant="h2">Book Title</Typography>
-            <Typography>May 18, 2015 | 18 likes</Typography>
+        <Box flexGrow={2}>
+          <Stack gap={1}>
+            <Typography variant="h4">Book Title</Typography>
+            <Typography fontSize="0.8rem">May 18, 2015 | 18 likes</Typography>
             <Rating
               precision={0.5}
               defaultValue={4}
@@ -27,8 +27,7 @@ function page({}: Props) {
             
           </Stack>
           <Stack marginTop='2rem'>
-            <Typography variant="h4">Description</Typography>
-            <Typography variant="h6">
+            <Typography fontSize="1.1rem">
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Soluta
               illo eveniet a fugiat quam nisi sit asperiores dolorum sed id.
             </Typography>
@@ -36,9 +35,14 @@ function page({}: Props) {
           <PdfViewer/>
           {/* <Sample/> */}
         </Box>
-        <Box sx={{ backgroundColor: "blue" }}></Box>
+        <Box flexGrow={1} sx={{ backgroundColor: "" }}>
+          <Typography variant="h6">Recommended</Typography>
+          <ProductList/>
+        </Box>
       </Box>
-      <Box></Box>
+      <Box>
+
+      </Box>
     </Stack>
   );
 }

@@ -5,11 +5,13 @@ import { createSlice } from "@reduxjs/toolkit";
 type InitialState = {
   loading: boolean,
   docData: docsInterface | null,
+  docDetail: object
 };
 
 const initialState: InitialState = {
   loading: false,
   docData: null,
+  docDetail: {},
 };
 
 export const notes = createSlice({
