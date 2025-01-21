@@ -24,7 +24,8 @@ function AvatarNav({}: Props) {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.userProfileReducer);
-  const token = Cookies.get('auth_token');
+  const token = Cookies.get("auth_token");
+  console.log("Token", token);
 
   useEffect(() => {
     const fetchUser = async() => {

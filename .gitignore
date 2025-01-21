@@ -1,10 +1,4 @@
-.env
-**/__pycache__/
-**/migrations/
-profile_pics
-pdfs
-env
-pyvenv.cfg
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
